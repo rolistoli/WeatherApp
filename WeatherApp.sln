@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherApp", "WeatherApp\WeatherApp.csproj", "{CDEBC228-FEA5-4A3C-8EF8-144F09B14994}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CDEBC228-FEA5-4A3C-8EF8-144F09B14994}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDEBC228-FEA5-4A3C-8EF8-144F09B14994}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDEBC228-FEA5-4A3C-8EF8-144F09B14994}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDEBC228-FEA5-4A3C-8EF8-144F09B14994}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
