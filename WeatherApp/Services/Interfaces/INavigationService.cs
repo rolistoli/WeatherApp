@@ -5,5 +5,5 @@ namespace WeatherApp.Services.Interfaces;
 public interface INavigationService
 {
     Task GoToResultsAsync(CityLocation location);
-    Task GoToResultsModalAsync(CityLocation location);
+    Task ShowLocationPopupAsync(CityLocation location);
 }

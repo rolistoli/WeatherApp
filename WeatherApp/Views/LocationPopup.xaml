@@ -4,40 +4,62 @@
              x:Class="WeatherApp.Views.LocationPopup"
              x:DataType="viewModels:LocationPopupViewModel"
              xmlns:viewModels="clr-namespace:WeatherApp.ViewModels"
-             IsVisible="{Binding IsVisible}"
              ZIndex="10"
-             HeightRequest="220"
-             WidthRequest="360"
+             Margin="12"
              HorizontalOptions="Center"
              VerticalOptions="End">
-    <Grid Padding="12">
-        <Border BackgroundColor="White" StrokeShape="RoundRectangle 22" HeightRequest="220" WidthRequest="360">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
 
-                <Button Text="X" Background="Transparent" TextColor="Black" FontAttributes="Bold" FontSize="16"  HorizontalOptions="End" VerticalOptions="Start" Command="{Binding CloseCommand}" />
 
-                <StackLayout Padding="12" Grid.Row="1">
-                    <Label Text="{Binding Title}" FontAttributes="Bold" />
-                    <Label Text="{Binding Subtitle}" FontSize="Small" TextColor="Gray" HeightRequest="18" />
+    <Border BackgroundColor="White" 
+                Stroke="Black"
+                StrokeShape="RoundRectangle 18" WidthRequest="360" HeightRequest="130"
+                IsEnabled="{Binding IsNotLoading}"             
+                IsVisible="{Binding IsVisible}">
 
-                    <HorizontalStackLayout VerticalOptions="Center" Spacing="12">
-                        <Label Text="{Binding Temperature}" FontSize="20" FontAttributes="Bold" HeightRequest="28" />
-                    </HorizontalStackLayout>
+        <Grid IsClippedToBounds="True">
 
-                    <Label Text="{Binding Description}" FontSize="14" TextColor="Gray" HeightRequest="18" />
-                    <StackLayout Orientation="Horizontal" HorizontalOptions="End" Spacing="8" Margin="0,12,0,0">
-                        <Button Text="Adicionar" Command="{Binding AddCommand}" />
-                        <Button Text="Detalhes" Command="{Binding DetailsCommand}" />
-                    </StackLayout>
-                </StackLayout>
+            <Image Source="{Binding WeatherImage}" Aspect="AspectFit" HeightRequest="120"/>
 
-                <!-- centered loading overlay -->
-                <ActivityIndicator Grid.RowSpan="2" IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="48" HeightRequest="48" />
-            </Grid>
-        </Border>
-    </Grid>
+            <Button x:Name="CloseButton" HorizontalOptions="End" VerticalOptions="Start" Background="Transparent"
+                        Command="{Binding CloseCommand}" Clicked="OnCloseButtonClicked">
+                <Button.ImageSource>
+                    <FontImageSource Glyph="✕" Size="18" Color="Black" />
+                </Button.ImageSource>
+            </Button>
+
+            <StackLayout Padding="12" Grid.Row="1">
+                <Label Text="{Binding Title}"
+                           FontAttributes="Bold" />
+                <Label Text="{Binding Subtitle}"
+                           FontSize="Small" TextColor="Gray" HeightRequest="18" />
+
+                <HorizontalStackLayout VerticalOptions="Center" Spacing="12">
+                    <Label Text="{Binding Temperature}"
+                               FontSize="20" 
+                               FontAttributes="Bold" 
+                               HeightRequest="28" />
+                </HorizontalStackLayout>
+
+                <Grid>
+                    <Label Text="{Binding Description}" FontSize="18"
+                               TextColor="Gray" HeightRequest="26"
+                               VerticalOptions="End"
+                               FontAttributes="Bold"/>
+                    <Button Text="Detalhes" Command="{Binding DetailsCommand}"
+                                HorizontalOptions="End"
+                                Background="LightBlue" TextColor="Black" FontAttributes="Bold"
+                                IsEnabled="{Binding IsNotLoading}" IsVisible="{Binding IsNotLoading}"/>
+                </Grid>
+            </StackLayout>
+
+            <ActivityIndicator Grid.RowSpan="2"
+                               IsRunning="{Binding IsLoading}" 
+                               IsVisible="{Binding IsLoading}"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               WidthRequest="24" HeightRequest="24"
+                               Color="DeepSkyBlue"/>
+        </Grid>
+    </Border>
+
 </ContentView>

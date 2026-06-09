@@ -14,36 +14,28 @@ public sealed class AppNavigationService(IServiceProvider serviceProvider) : INa
         if (page.BindingContext is ResultsViewModel viewModel)
         {
             await viewModel.LoadAsync(location);
-
-
         }
 
-        var navigation = Application.Current?.Windows.FirstOrDefault()?.Page?.Navigation;
-
-        if (navigation is null)
-        {
-            throw new InvalidOperationException("Navigation is not available.");
-        }
+        var navigation = (Application.Current?.Windows.FirstOrDefault()?.Page?.Navigation)
+            ?? throw new InvalidOperationException("Navigation not available.");
 
         await navigation.PushAsync(page);
     }
 
-    public async Task GoToResultsModalAsync(CityLocation location)
+    public async Task ShowLocationPopupAsync(CityLocation location)
     {
-        var page = serviceProvider.GetRequiredService<ResultsPage>();
+        var popupPage = serviceProvider.GetRequiredService<LocationPopupPage>();
 
-        if (page.BindingContext is ResultsViewModel viewModel)
+        if (popupPage.BindingContext is LocationPopupViewModel boundVm)
         {
-            await viewModel.LoadAsync(location);
+            await boundVm.BindLocationAsync(location);
+            boundVm.IsVisible = true;
         }
 
-        var navigation = Application.Current?.Windows.FirstOrDefault()?.Page?.Navigation;
+        var navigation = Application.Current?.Windows.FirstOrDefault()?.Page?.Navigation
+                    ?? throw new InvalidOperationException("Navigation not available.");
 
-        if (navigation is null)
-        {
-            throw new InvalidOperationException("Navigation is not available.");
-        }
 
-        await navigation.PushModalAsync(new NavigationPage(page));
+        await navigation.PushModalAsync(popupPage);
     }
 }

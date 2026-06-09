@@ -13,6 +13,8 @@ public sealed class SearchViewModel : BaseViewModel
     private string cityName = string.Empty;
     private CityLocation? selectedLocation;
     private bool hasResults;
+    // removed isMapBusy: use IsNavigating for global busy state
+    private bool isNavigating;
 
     public SearchViewModel(IGeocodingService geocodingService, INavigationService navigationService)
     {
@@ -44,8 +46,7 @@ public sealed class SearchViewModel : BaseViewModel
                 return;
             }
 
-            _ = SelectLocationAsync(value);
-            SelectedLocation = null;
+            _ = HandleSelectionAsync(value);
         }
     }
 
@@ -55,11 +56,29 @@ public sealed class SearchViewModel : BaseViewModel
         set => SetProperty(ref hasResults, value);
     }
 
+    // IsMapBusy removed; use IsNavigating only
+
+    public bool IsNavigating
+    {
+        get => isNavigating;
+        set => SetProperty(ref isNavigating, value);
+    }
+
     private async Task LoadSuggestionsAsync(string searchText)
     {
         ClearError();
 
         var query = searchText.Trim();
+
+        // if the query is empty, do not call the geocoding service or show an error;
+        // simply hide the results dropdown
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            HasResults = false;
+            Results.Clear();
+            IsLoading = false;
+            return;
+        }
 
         IsLoading = true;
 
@@ -103,6 +122,29 @@ public sealed class SearchViewModel : BaseViewModel
 
         // Keep existing behavior for other callers. Navigation from map taps will use OpenDetailsAsync instead.
         return navigationService.GoToResultsAsync(location);
+    }
+
+    private bool _isSelecting;
+
+    private async Task HandleSelectionAsync(CityLocation location)
+    {
+        if (_isSelecting) return;
+
+        _isSelecting = true;
+        try
+        {
+            // show blocking navigation UI (separate from search loading)
+            IsNavigating = true;
+
+            await navigationService.GoToResultsAsync(location);
+        }
+        finally
+        {
+            IsNavigating = false;
+            _isSelecting = false;
+            // clear selection on UI thread
+            SelectedLocation = null;
+        }
     }
 
     // Called by UI (for example a popup) to navigate to details for a location

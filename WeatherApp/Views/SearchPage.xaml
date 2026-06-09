@@ -4,9 +4,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:mapsui="clr-namespace:Mapsui.UI.Maui;assembly=Mapsui.UI.Maui"
     xmlns:viewModels="clr-namespace:WeatherApp.ViewModels"
+    xmlns:views="clr-namespace:WeatherApp.Views"
     xmlns:models="clr-namespace:WeatherApp.Models"
     x:Class="WeatherApp.Views.SearchPage"
-    x:DataType="viewModels:SearchViewModel">
+    x:DataType="viewModels:SearchViewModel"
+    NavigationPage.HasBackButton="True" NavigationPage.HasNavigationBar="False">
+   
 
     <Grid>
 
@@ -14,6 +17,13 @@
             x:Name="MapControl" 
             Loaded="MapControl_Loaded"
             MapTapped="MapControl_MapTapped"/>
+
+        <ActivityIndicator IsVisible="{Binding IsNavigating}" 
+                           IsRunning="{Binding IsNavigating}"
+                           HorizontalOptions="Center" 
+                           VerticalOptions="Center"
+                           WidthRequest="48" HeightRequest="48"
+                           Color="DeepSkyBlue" />
 
         <Grid
             Padding="24,36"
@@ -25,8 +35,7 @@
                 <Border
                     BackgroundColor="White"
                     Stroke="Black"
-                    StrokeShape="RoundRectangle 18"
-                    Padding="0">
+                    StrokeShape="RoundRectangle 18">
 
                     <Grid
                         Padding="18,12"
@@ -48,7 +57,8 @@
                             ReturnType="Done"
                             FontSize="18"
                             Placeholder="Pesquisar cidade"
-                            BackgroundColor="Transparent" />
+                            BackgroundColor="Transparent"
+                            Focused="CityEntry_Focused" />
 
                         <ActivityIndicator
                             Grid.Column="2"

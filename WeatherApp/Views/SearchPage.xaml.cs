@@ -4,18 +4,20 @@ using Mapsui.Projections;
 using Mapsui.Styles;
 using Mapsui.Tiling;
 using WeatherApp.Models;
+using WeatherApp.Services.Interfaces;
 using WeatherApp.ViewModels;
 
 namespace WeatherApp.Views;
 
 public partial class SearchPage : ContentPage
 {
-    private LocationPopup? popup;
+    private readonly INavigationService navigationService;
 
-    public SearchPage(SearchViewModel viewModel, LocationPopupViewModel popupViewModel)
+    public SearchPage(SearchViewModel viewModel, INavigationService navigationService)
     {
         InitializeComponent();
         BindingContext = viewModel;
+        this.navigationService = navigationService;
 
         MapControl.Map = new Mapsui.Map
         {
@@ -26,52 +28,72 @@ public partial class SearchPage : ContentPage
         };
 
         MapControl.Map.Widgets.Clear();
-
-        // create popup using the dedicated popup view model and add it to the visual tree
-        popup = new LocationPopup(popupViewModel) { IsVisible = false };
-
-        if (Content is Layout layout)
-        {
-            layout.Children.Add(popup);
-        }
     }
 
-    private void MapControl_Loaded(object sender, EventArgs e)  
+    private void MapControl_Loaded(object sender, EventArgs e)
     {
         var lisbon = SphericalMercator.FromLonLat(-9.1393, 38.7223);
 
         MapControl.Map.Navigator.CenterOn(lisbon.x, lisbon.y);
-        MapControl.Map.Navigator.ZoomTo(30);
+        MapControl.Map.Navigator.ZoomTo(50);
 
-        MapControl.Map.Navigator.OverrideZoomBounds = new MMinMax(50,300);
+        MapControl.Map.Navigator.OverrideZoomBounds = new MMinMax(50, 2000);
         MapControl.Map.Navigator.RotationLock = true;
+    }
 
+    private void CityEntry_Focused(object sender, FocusEventArgs e)
+    {
+        // clear any existing pins when the search entry gains focus
+        try
+        {
+            var map = MapControl.Map;
+            if (map is null)
+                return;
+
+            var existing = map.Layers.FirstOrDefault(l => l.Name == "Pins");
+            if (existing is not null)
+            {
+                map.Layers.Remove(existing);
+                MapControl.Refresh();
+            }
+        }
+        catch
+        {
+            // ignore
+        }
     }
 
     private async void MapControl_MapTapped(object sender, MapEventArgs e)
     {
-        if (MapControl.Map is null) return;
+        if (MapControl.Map is null)
+            return;
 
         var (lon, lat) = SphericalMercator.ToLonLat(
-        e.WorldPosition.X,
-        e.WorldPosition.Y);
+            e.WorldPosition.X,
+            e.WorldPosition.Y);
 
         if (BindingContext is SearchViewModel vm)
         {
-            //vm.SelectedLocation = new CityLocation()
-            //{
-            //    Latitude = lat,
-            //    Longitude = lon
-            //};
-
-            // show small popup at bottom with options
             var loc = new CityLocation { Latitude = lat, Longitude = lon };
-            if (popup is not null)
-            {
-                await popup.BindLocationAsync(loc);
-                popup.IsVisible = true;
-            }
+
+            // clear search entry and results
+            vm.CityName = string.Empty;
+            vm.HasResults = false;
+            vm.Results.Clear();
+
+            // mark navigating state so UI shows activity indicator
+            vm.IsNavigating = true;
+
+            // draw pin first
             AddPinAtLocation(lat, lon);
+
+            // allow UI to render the pin before heavy work
+            await Task.Yield();
+
+            // show popup via navigation service (modal) using DI
+            await navigationService.ShowLocationPopupAsync(loc);
+
+            vm.IsNavigating = false;
         }
     }
 
@@ -80,9 +102,10 @@ public partial class SearchPage : ContentPage
         try
         {
             var map = MapControl.Map;
-            if (map is null) return;
+            if (map is null)
+                return;
 
-            var (lon,lat ) = SphericalMercator.FromLonLat(longitude, latitude);
+            var (lon, lat) = SphericalMercator.FromLonLat(longitude, latitude);
 
             // remove previous pin layer if exists
             var existing = map.Layers.FirstOrDefault(l => l.Name == "Pins");
@@ -103,8 +126,7 @@ public partial class SearchPage : ContentPage
                             new SymbolStyle
                             {
                                 SymbolScale = 0.2,
-                                                    Fill = new Mapsui.Styles.Brush { Color = Mapsui.Styles.Color.Red }
-
+                                Fill = new Mapsui.Styles.Brush { Color = Mapsui.Styles.Color.Red }
                             }
                         }
                     }

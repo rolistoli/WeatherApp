@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 
 namespace WeatherApp.DTOs;
-
 public sealed class NominatimReverseDto
 {
     [JsonPropertyName("place_id")]

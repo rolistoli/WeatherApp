@@ -14,4 +14,10 @@ public partial class ResultsPage : ContentPage
     {
         InitializeComponent();
     }
+
+    protected override bool OnBackButtonPressed()
+    {
+        // let navigation stack handle back by default
+        return base.OnBackButtonPressed();
+    }
 }

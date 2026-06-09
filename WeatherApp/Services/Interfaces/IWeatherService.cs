@@ -8,5 +8,7 @@ public interface IWeatherService
         double latitude,
         double longitude);
 
-    Task<PointWeather> GetPointWeatherAsync(double latitude, double longitude);
+    Task<PointWeather> GetPointWeatherAsync(
+        double latitude,
+        double longitude);
 }

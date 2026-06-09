@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 
 namespace WeatherApp.DTOs;
-
 public sealed class WeatherForecastResponseDto
 {
     [JsonPropertyName("latitude")]

@@ -17,38 +17,31 @@ public sealed class WeatherService(HttpClient httpClient) : IWeatherService
     {
         var latitudeValue = latitude.ToString(CultureInfo.InvariantCulture);
         var longitudeValue = longitude.ToString(CultureInfo.InvariantCulture);
-        var requestUri = $"{ApiConstants.ForecastEndpoint}?latitude={latitudeValue}&longitude={longitudeValue}&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=5&timezone=auto";
+        var requestUri = $"{ApiConstants.OpenMeteoForecastEndpoint}?latitude={latitudeValue}&longitude={longitudeValue}&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=5&timezone=auto";
 
         using var response = await httpClient.GetAsync(requestUri);
         response.EnsureSuccessStatusCode();
 
         var dto = await response.Content.ReadFromJsonAsync<WeatherForecastResponseDto>()
-            ?? throw new InvalidOperationException("");
+            ?? throw new InvalidOperationException("Empty response");
 
         return WeatherMapper.ToWeatherForecast(dto);
     }
 
-    public async Task<PointWeather> GetPointWeatherAsync(double latitude, double longitude)
+    public async Task<PointWeather> GetPointWeatherAsync(
+        double latitude,
+        double longitude)
     {
         var latitudeValue = latitude.ToString(CultureInfo.InvariantCulture);
         var longitudeValue = longitude.ToString(CultureInfo.InvariantCulture);
-        var requestUri = $"{ApiConstants.ForecastEndpoint}?latitude={latitudeValue}&longitude={longitudeValue}&current_weather=true&timezone=auto";
+        var requestUri = $"{ApiConstants.OpenMeteoForecastEndpoint}?latitude={latitudeValue}&longitude={longitudeValue}&current_weather=true&timezone=auto";
 
         using var response = await httpClient.GetAsync(requestUri);
         response.EnsureSuccessStatusCode();
 
         var dto = await response.Content.ReadFromJsonAsync<PointWeatherDto>()
-            ?? throw new InvalidOperationException("Failed to read point weather response");
+            ?? throw new InvalidOperationException("Empty response");
 
-        var cw = dto.CurrentWeather;
-
-        return new PointWeather
-        {
-            Temperature = cw.Temperature,
-            WindSpeed = cw.Windspeed,
-            WeatherCode = cw.Weathercode,
-            Time = cw.Time,
-            Description = WeatherCodeDescriptions.GetDescription(cw.Weathercode)
-        };
+        return WeatherMapper.ToPointWeather(dto);
     }
 }

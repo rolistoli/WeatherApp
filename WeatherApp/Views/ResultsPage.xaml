@@ -4,10 +4,9 @@
              xmlns:models="clr-namespace:WeatherApp.Models" 
              xmlns:viewModels="clr-namespace:WeatherApp.ViewModels" 
              x:Class="WeatherApp.Views.ResultsPage" 
-             x:DataType="viewModels:ResultsViewModel">
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Voltar" Clicked="OnBackClicked" Priority="0" Order="Primary" />
-    </ContentPage.ToolbarItems>
+             x:DataType="viewModels:ResultsViewModel"
+             NavigationPage.HasBackButton="True" NavigationPage.HasNavigationBar="False">
+    
     <ScrollView>
         <VerticalStackLayout x:Name="PageContent" 
                              Padding="24,28" 
@@ -71,12 +70,9 @@
                 <CollectionView ItemsLayout="HorizontalList" ItemsSource="{Binding Hourly}" HeightRequest="90" Margin="0,6,0,6">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:HourlyForecast">
-                            <Frame Padding="0" Margin="6,0" CornerRadius="12" HasShadow="False">
-                                <Frame.Background>
-                                    <ImageBrush ImageSource="{Binding BackgroundImageName}" />
-                                </Frame.Background>
-
+                            <Frame Padding="0" Margin="6,0" CornerRadius="12" HasShadow="False" IsClippedToBounds="True">
                                 <Grid HeightRequest="80" WidthRequest="72">
+                                    <Image Source="{Binding BackgroundImageName}" Aspect="AspectFill" />
                                     <BoxView BackgroundColor="#80000000" />
                                     <VerticalStackLayout Spacing="2" HorizontalOptions="Center" VerticalOptions="Center">
                                         <Label Text="{Binding HourLabel}" FontSize="12" TextColor="White" HorizontalTextAlignment="Center" />

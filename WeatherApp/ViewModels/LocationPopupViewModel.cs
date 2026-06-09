@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using WeatherApp.Models;
 using WeatherApp.Services.Interfaces;
 using Microsoft.Maui.ApplicationModel;
+using WeatherApp.Helpers;
 
 namespace WeatherApp.ViewModels;
 
@@ -35,6 +36,9 @@ public partial class LocationPopupViewModel : BaseViewModel
     private string description = string.Empty;
 
     [ObservableProperty]
+    private string weatherImage = string.Empty;
+
+    [ObservableProperty]
     private bool isVisible;
 
     [RelayCommand]
@@ -45,17 +49,40 @@ public partial class LocationPopupViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private void Close()
+    private async Task Close()
     {
+        // If this popup was shown as a modal page, act like the back button and pop the modal.
+        var navigation = Application.Current?.Windows.FirstOrDefault()?.Page?.Navigation;
+        if (navigation is not null && navigation.ModalStack.Count > 0)
+        {
+            try
+            {
+                await navigation.PopModalAsync();
+                return;
+            }
+            catch
+            {
+                // fall through to hiding the popup if pop fails
+            }
+        }
+
+        // otherwise just hide the overlay popup
         IsVisible = false;
     }
 
-    public IRelayCommand DetailsCommand => new RelayCommand(async () =>
+    public CommunityToolkit.Mvvm.Input.IAsyncRelayCommand DetailsCommand => new CommunityToolkit.Mvvm.Input.AsyncRelayCommand(async () =>
     {
-        if (Location is not null)
+        if (Location is null) return;
+
+        try
         {
-            await navigationService.GoToResultsModalAsync(Location);
+            IsLoading = true;
+            await navigationService.GoToResultsAsync(Location);
             IsVisible = false;
+        }
+        finally
+        {
+            IsLoading = false;
         }
     });
 
@@ -66,12 +93,13 @@ public partial class LocationPopupViewModel : BaseViewModel
         {
             Location = loc;
             // Do not show raw coordinates while loading; show a loading title instead
-            Title = "A carregar...";
+            Title = string.Empty;
             Subtitle = string.Empty;
             Temperature = string.Empty;
             Description = string.Empty;
             IsVisible = true;
             IsLoading = true;
+            WeatherImage = string.Empty;
         });
 
         // reverse geocode for nicer name; prefer Portuguese
@@ -98,6 +126,8 @@ public partial class LocationPopupViewModel : BaseViewModel
             {
                 Temperature = $"{pw.Temperature:F1} °C";
                 Description = pw.Description;
+                // set image for the popup based on returned weather code
+                WeatherImage = WeatherBackground.GetBackgroundForCode(pw.WeatherCode);
             });
         }
         catch { }

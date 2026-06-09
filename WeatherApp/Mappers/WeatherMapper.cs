@@ -1,4 +1,5 @@
-﻿using WeatherApp.DTOs;
+﻿using System.Globalization;
+using WeatherApp.DTOs;
 using WeatherApp.Helpers;
 using WeatherApp.Models;
 
@@ -68,8 +69,7 @@ public static class WeatherMapper
             WeatherDescription = WeatherCodeDescriptions.GetDescription(dto.Current.WeatherCode.Value),
             DailyForecasts = dailyForecasts,
             HourlyForecasts = ToHourlyForecasts(dto.Hourly),
-            // add a background image for the current conditions too
-            CurrentBackgroundImage = GetBackgroundForCode(dto.Current.WeatherCode.Value)
+            CurrentBackgroundImage = WeatherBackground.GetBackgroundForCode(dto.Current.WeatherCode.Value)
         };
     }
 
@@ -87,24 +87,62 @@ public static class WeatherMapper
                 Temperature = hourly.Temperature2m[i],
                 WeatherCode = code,
                 Description = WeatherCodeDescriptions.GetDescription(code),
-                BackgroundImageName = GetBackgroundForCode(code),
+                BackgroundImageName = WeatherBackground.GetBackgroundForCode(code),
             });
         }
         return list;
-    }
+    }  
 
-    private static string GetBackgroundForCode(int code)
+    public static CityLocation ToLocation(NominatimReverseDto dto, double defaultLatitude, double defaultLongitude)
     {
-        // simple mapping: sunny, cloudy, rain, snow, thunder
-        return code switch
+        if (dto is null)
         {
-            0 => "weather_sunny.png",
-            1 or 2 => "weather_partly_cloudy.png",
-            3 or 45 or 48 => "weather_cloudy.png",
-            51 or 53 or 55 or 56 or 61 or 63 or 65 or 80 or 81 or 82 => "weather_rain.png",
-            71 or 73 or 75 or 77 or 85 or 86 => "weather_snow.png",
-            95 or 96 or 99 => "weather_thunder.png",
-            _ => "weather_unknown.png"
+            throw new ArgumentNullException(nameof(dto));
+        }
+
+        var name = dto.DisplayName ?? string.Empty;
+        var city = dto.Address?.City ?? dto.Address?.Town ?? dto.Address?.Village ?? dto.Address?.County ?? string.Empty;
+
+        var latitude = defaultLatitude;
+        var longitude = defaultLongitude;
+
+        if (double.TryParse(dto.Lat, NumberStyles.Any, CultureInfo.InvariantCulture, out var latParsed))
+        {
+            latitude = latParsed;
+        }
+
+        if (double.TryParse(dto.Lon, NumberStyles.Any, CultureInfo.InvariantCulture, out var lonParsed))
+        {
+            longitude = lonParsed;
+        }
+
+        return new CityLocation
+        {
+            Id = dto.PlaceId,
+            Name = string.IsNullOrWhiteSpace(city) ? name : city,
+            Latitude = latitude,
+            Longitude = longitude,
+            Country = dto.Address?.Country ?? string.Empty,
+            Admin1 = dto.Address?.State ?? string.Empty
         };
-    }
+    } 
+
+    public static PointWeather ToPointWeather(PointWeatherDto dto)
+    {
+        if (dto is null)
+        {
+            throw new ArgumentNullException(nameof(dto));
+        }
+
+        var cw = dto.CurrentWeather;
+
+        return new PointWeather
+        {
+            Temperature = cw.Temperature,
+            WindSpeed = cw.Windspeed,
+            WeatherCode = cw.Weathercode,
+            Time = cw.Time,
+            Description = WeatherCodeDescriptions.GetDescription(cw.Weathercode)
+        };
+    }   
 }

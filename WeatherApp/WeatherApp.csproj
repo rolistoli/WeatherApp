@@ -40,13 +40,6 @@
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
     </ItemGroup>
 
-    <!-- Keep Android resources in Platforms/Android so platform-specific drawables and styles are packaged -->
-
-    <ItemGroup>
-      <None Remove="Resources\AppIcon\appicon.png" />
-      <None Remove="Resources\Splash\splash.png" />
-    </ItemGroup>
-
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.60" />
@@ -58,19 +51,22 @@
 
 
     <ItemGroup>
-      <MauiIcon Include="Resources\AppIcon\appicon.png">
+      <MauiIcon Include="Resources\AppIcon\appicon.png" BaseSize="64,64">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </MauiIcon>
     </ItemGroup>
 
 
     <ItemGroup>
-      <MauiSplashScreen Include="Resources\Splash\splash.png">
+      <MauiSplashScreen Include="Resources\Splash\splash.png" Color="#87CEEB" BaseSize="256,256">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </MauiSplashScreen>
     </ItemGroup>
 
     <ItemGroup>
+      <MauiXaml Update="Views\LocationPopupPage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
       <MauiXaml Update="Views\MainPage.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
@@ -81,14 +77,5 @@
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
     </ItemGroup>
-
-    <ItemGroup>
-      <None Update="Views\MainPage.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </None>
-      <None Update="Views\SearchPage.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </None>
-    </ItemGroup>
-
+	
 </Project>
