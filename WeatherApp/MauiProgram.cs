@@ -45,8 +45,6 @@ public static class MauiProgram
         builder.Services.AddTransient<ResultsPage>();
         builder.Services.AddTransient<LocationPopupViewModel>();
         builder.Services.AddTransient<LocationPopup>();
-        builder.Services.AddTransient<LocationPopupPage>();
-
 
         return builder.Build();
     }

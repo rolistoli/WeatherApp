@@ -38,26 +38,15 @@ public partial class LocationPopupViewModel : BaseViewModel
     [ObservableProperty]
     private string weatherImage = string.Empty;
 
-    [ObservableProperty]
-    private bool isVisible;
-
-    [RelayCommand]
-    private void Add()
-    {
-        // placeholder for add action
-        IsVisible = false;
-    }
-
     [RelayCommand]
     private async Task Close()
     {
-        // If this popup was shown as a modal page, act like the back button and pop the modal.
         var navigation = Application.Current?.Windows.FirstOrDefault()?.Page?.Navigation;
         if (navigation is not null && navigation.ModalStack.Count > 0)
         {
             try
             {
-                await navigation.PopModalAsync();
+                await navigation.PopModalAsync(false);
                 return;
             }
             catch
@@ -65,75 +54,70 @@ public partial class LocationPopupViewModel : BaseViewModel
                 // fall through to hiding the popup if pop fails
             }
         }
-
-        // otherwise just hide the overlay popup
-        IsVisible = false;
     }
 
-    public CommunityToolkit.Mvvm.Input.IAsyncRelayCommand DetailsCommand => new CommunityToolkit.Mvvm.Input.AsyncRelayCommand(async () =>
+    [RelayCommand]
+    private async Task Details()
     {
         if (Location is null) return;
 
         try
         {
             IsLoading = true;
+ 
             await navigationService.GoToResultsAsync(Location);
-            IsVisible = false;
+        }
+        finally
+        {
+            // ensure the popup is closed before navigating to the results screen
+            await Close();
+            IsLoading = false;
+        }
+    }
+
+    public async Task BindLocationAsync(CityLocation loc)
+    {
+        Location = loc;
+        Title = string.Empty;
+        Subtitle = string.Empty;
+        Temperature = string.Empty;
+        Description = string.Empty;
+        IsLoading = true;
+        WeatherImage = string.Empty;
+
+        try
+        {
+            var zone = await geocodingService.ReverseAsync(
+                loc.Latitude,
+                loc.Longitude);
+
+            if (zone is not null)
+            {
+                Location = zone;
+                Title = zone.Name ?? string.Empty;
+                Subtitle = zone.Country ?? string.Empty;
+            }
+        }
+        catch
+        {
+        }
+
+        try
+        {
+            var pw = await weatherService.GetPointWeatherAsync(
+                loc.Latitude,
+                loc.Longitude);
+
+            Temperature = $"{pw.Temperature:F1} °C";
+            Description = pw.Description;
+            WeatherImage = WeatherBackground.GetBackgroundForCode(pw.WeatherCode);
+        }
+        catch
+        {
         }
         finally
         {
             IsLoading = false;
-        }
-    });
-
-    public async Task BindLocationAsync(CityLocation loc)
-    {
-        // show loading state and initialize values on UI thread
-        MainThread.BeginInvokeOnMainThread(() =>
-        {
-            Location = loc;
-            // Do not show raw coordinates while loading; show a loading title instead
-            Title = string.Empty;
-            Subtitle = string.Empty;
-            Temperature = string.Empty;
-            Description = string.Empty;
-            IsVisible = true;
-            IsLoading = true;
-            WeatherImage = string.Empty;
-        });
-
-        // reverse geocode for nicer name; prefer Portuguese
-        try
-        {
-            var zone = await geocodingService.ReverseAsync(loc.Latitude, loc.Longitude, language: "pt");
-            if (zone is not null)
-            {
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    // replace the location with service-provided info
-                    Location = zone;
-                    Title = zone.Name ?? Title;
-                    Subtitle = zone.Country ?? string.Empty;
-                });
-            }
-        }
-        catch { }
-
-        try
-        {
-            var pw = await weatherService.GetPointWeatherAsync(loc.Latitude, loc.Longitude);
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                Temperature = $"{pw.Temperature:F1} °C";
-                Description = pw.Description;
-                // set image for the popup based on returned weather code
-                WeatherImage = WeatherBackground.GetBackgroundForCode(pw.WeatherCode);
-            });
-        }
-        catch { }
-        finally
-        {
-            MainThread.BeginInvokeOnMainThread(() => IsLoading = false);
         }
     }
 }

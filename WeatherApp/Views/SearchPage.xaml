@@ -8,8 +8,7 @@
     xmlns:models="clr-namespace:WeatherApp.Models"
     x:Class="WeatherApp.Views.SearchPage"
     x:DataType="viewModels:SearchViewModel"
-    NavigationPage.HasBackButton="True" NavigationPage.HasNavigationBar="False">
-   
+    NavigationPage.HasBackButton="True" NavigationPage.HasNavigationBar="False">   
 
     <Grid>
 
@@ -24,7 +23,6 @@
                            VerticalOptions="Center"
                            WidthRequest="48" HeightRequest="48"
                            Color="DeepSkyBlue" />
-
         <Grid
             Padding="24,36"
             VerticalOptions="Start"
@@ -47,8 +45,7 @@
                             Text="⌕"
                             FontSize="26"
                             VerticalOptions="Center"
-                            TextColor="{AppThemeBinding Light={StaticResource Gray600},
-                            Dark={StaticResource Gray200}}" />
+                            TextColor="{StaticResource Gray600}" />
 
                         <Entry
                             x:Name="CityEntry"
@@ -99,30 +96,18 @@
                                         <Label
                                             Text="{Binding Admin1}"
                                             FontSize="13"
-                                            TextColor="{AppThemeBinding Light={StaticResource Gray600},
-                                            Dark={StaticResource Gray200}}" />
+                                            TextColor="{StaticResource Gray600}" />
 
                                         <Label
                                             Text="{Binding Country}"
                                             FontSize="13"
-                                            TextColor="{AppThemeBinding Light={StaticResource Gray600},
-                                            Dark={StaticResource Gray200}}" />
+                                            TextColor="{StaticResource Gray600}" />
                                     </HorizontalStackLayout>
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
-                </Border>
-
-                <Border IsVisible="{Binding HasError}"
-                    Padding="16" 
-                    StrokeShape="RoundRectangle 14" 
-                    Stroke="#E57373" 
-                    BackgroundColor="#FFF4F4">
-                    
-                    <Label Text="{Binding ErrorMessage}"
-                           TextColor="#B00020" />
-                </Border>
+                </Border>               
 
             </VerticalStackLayout>
         </Grid>

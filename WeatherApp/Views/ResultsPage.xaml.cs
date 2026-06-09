@@ -10,14 +10,8 @@ public partial class ResultsPage : ContentPage
         BindingContext = viewModel;
     }
 
-    public ResultsPage()
-    {
-        InitializeComponent();
-    }
-
     protected override bool OnBackButtonPressed()
     {
-        // let navigation stack handle back by default
         return base.OnBackButtonPressed();
     }
 }

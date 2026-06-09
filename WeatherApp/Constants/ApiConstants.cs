@@ -1,5 +1,4 @@
 namespace WeatherApp.Constants;
-
 public static class ApiConstants
 {
     public const string OpenMeteoForecastEndpoint = "https://api.open-meteo.com/v1/forecast";

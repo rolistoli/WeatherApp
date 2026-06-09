@@ -5,7 +5,6 @@ public enum ThemeMode
     Light,
     Dark
 }
-
 public static class AppSettings
 {
     private const string ThemePreferenceKey = "theme_mode";

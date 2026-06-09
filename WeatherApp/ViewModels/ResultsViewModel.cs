@@ -42,19 +42,9 @@ public sealed partial class ResultsViewModel : BaseViewModel
     public async Task LoadAsync(CityLocation location)
     {
         currentLocation = location;
-        LocationName = BuildLocationName(location);
-        RetryCommand.NotifyCanExecuteChanged();
+        LocationName = WeatherHelper.BuildLocationName(location);
         await LoadWeatherAsync();
-    }
-
-    [RelayCommand(CanExecute = nameof(CanRetry))]
-    private async Task RetryAsync()
-    {
-        if (currentLocation is not null)
-        {
-            await LoadWeatherAsync();
-        }
-    }
+    } 
 
     private async Task LoadWeatherAsync()
     {
@@ -63,11 +53,9 @@ public sealed partial class ResultsViewModel : BaseViewModel
             return;
         }
 
-        ClearError();
         HasForecast = false;
         Forecast.Clear();
         IsLoading = true;
-        RetryCommand.NotifyCanExecuteChanged();
 
         try
         {
@@ -78,71 +66,51 @@ public sealed partial class ResultsViewModel : BaseViewModel
             ApplyForecast(forecast);
             HasForecast = true;
         }      
-        catch (Exception ex)
+        catch
         {
-            ErrorMessage = ex.Message;
         }
         finally
         {
             IsLoading = false;
-            RetryCommand.NotifyCanExecuteChanged();
         }
     }
 
-    private bool CanRetry()
-    {
-        return IsNotLoading && currentLocation is not null;
-    }
-
-
     private void ApplyForecast(WeatherForecast forecast)
     {
+        Hourly.Clear();
+        Forecast.Clear();
+
+        if (forecast is null)
+        { 
+            return;
+        }
+
         CurrentTemperature = $"{forecast.CurrentTemperature:F1} °C";
         WeatherDescription = WeatherCodeDescriptions.GetDescription(forecast.CurrentWeatherCode);
         CurrentBackgroundImage = forecast.CurrentBackgroundImage;
 
-        // set current day from first daily forecast if available
-        if (forecast.DailyForecasts != null && forecast.DailyForecasts.Count > 0)
+        if (forecast.DailyForecasts is not null && forecast.DailyForecasts.Count > 0)
         {
-            CurrentDay = FormatDate(forecast.DailyForecasts[0].DateValue);
-        }
+            CurrentDay = WeatherHelper.FormatDate(forecast.DailyForecasts[0].DateValue);
 
-        Hourly.Clear();
-
-        Forecast.Clear();
-
-        foreach (var dailyForecast in forecast.DailyForecasts)
-        {
-            Forecast.Add(new DailyForecast
+            foreach (var dailyForecast in forecast.DailyForecasts)
             {
-                Date = FormatDate(dailyForecast.DateValue),
-                DateValue = dailyForecast.DateValue,
-                WeatherCode = dailyForecast.WeatherCode,
-                TemperatureMin = dailyForecast.TemperatureMin,
-                TemperatureMax = dailyForecast.TemperatureMax,
-                Description = WeatherCodeDescriptions.GetDescription(dailyForecast.WeatherCode),
-                TemperatureRange = $"{dailyForecast.TemperatureMin:F0}°C / {dailyForecast.TemperatureMax:F0}°C"
-            });
+                Forecast.Add(new DailyForecast
+                {
+                Date = WeatherHelper.FormatDate(dailyForecast.DateValue),
+                    DateValue = dailyForecast.DateValue,
+                    WeatherCode = dailyForecast.WeatherCode,
+                    TemperatureMin = dailyForecast.TemperatureMin,
+                    TemperatureMax = dailyForecast.TemperatureMax,
+                    Description = WeatherCodeDescriptions.GetDescription(dailyForecast.WeatherCode),
+                    TemperatureRange = $"{dailyForecast.TemperatureMin:F0}°C / {dailyForecast.TemperatureMax:F0}°C"
+                });
+            }
         }
 
         foreach (var hourly in forecast.HourlyForecasts)
         {
             Hourly.Add(hourly);
         }
-    }
-
-    private static string BuildLocationName(CityLocation location)
-    {
-        var parts = new[] { location.Name, location.Admin1, location.Country }
-            .Where(part => !string.IsNullOrWhiteSpace(part));
-
-        return string.Join(", ", parts);
-    }
-
-    private static string FormatDate(string value)
-    {
-        return DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out var date)
-            ? date.ToString("ddd, dd MMM", CultureInfo.CurrentCulture)
-            : value;
     }
 }

@@ -24,18 +24,33 @@ public sealed class AppNavigationService(IServiceProvider serviceProvider) : INa
 
     public async Task ShowLocationPopupAsync(CityLocation location)
     {
-        var popupPage = serviceProvider.GetRequiredService<LocationPopupPage>();
+        var popupView = serviceProvider.GetRequiredService<LocationPopup>();
 
-        if (popupPage.BindingContext is LocationPopupViewModel boundVm)
+        if (popupView.BindingContext is LocationPopupViewModel viewModel)
         {
-            await boundVm.BindLocationAsync(location);
-            boundVm.IsVisible = true;
+            await viewModel.BindLocationAsync(location);
         }
 
         var navigation = Application.Current?.Windows.FirstOrDefault()?.Page?.Navigation
                     ?? throw new InvalidOperationException("Navigation not available.");
 
+        // Build a transparent modal page that hosts the popup view at the bottom
+        var modal = new ContentPage
+        {
+            BackgroundColor = Colors.Transparent,
+            Content = new Grid
+            {
+                BackgroundColor = Colors.Transparent,
+                HorizontalOptions = LayoutOptions.Fill,
+                VerticalOptions = LayoutOptions.Fill,
+                Children =
+                {
+                    new BoxView { BackgroundColor = Color.FromArgb("#80000000"), HorizontalOptions = LayoutOptions.Fill, VerticalOptions = LayoutOptions.Fill },
+                    popupView
+                }
+            }
+        };
 
-        await navigation.PushModalAsync(popupPage);
+        await navigation.PushModalAsync(modal, false);
     }
 }

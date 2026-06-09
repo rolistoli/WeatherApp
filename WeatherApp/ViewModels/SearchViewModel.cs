@@ -152,6 +152,35 @@ public sealed class SearchViewModel : BaseViewModel
     {
         return navigationService.GoToResultsAsync(location);
     }
+
+    // Called by the view when the map is tapped. Moves the view-model logic
+    // that was previously in the code-behind into the VM so it's testable.
+    public async Task HandleMapTapAsync(CityLocation location)
+    {
+        if (location is null)
+            return;
+
+        // clear search entry and results
+        CityName = string.Empty;
+        HasResults = false;
+        Results.Clear();
+
+        // mark navigating state so UI shows activity indicator
+        IsNavigating = true;
+
+        try
+        {
+            // allow UI to render any immediate changes (for example a pin added by the view)
+            await Task.Yield();
+
+            // show popup via navigation service (modal)
+            await navigationService.ShowLocationPopupAsync(location);
+        }
+        finally
+        {
+            IsNavigating = false;
+        }
+    }
     private void ApplyResults(IReadOnlyList<CityLocation> results)
     {
         for (var index = 0; index < results.Count; index++)

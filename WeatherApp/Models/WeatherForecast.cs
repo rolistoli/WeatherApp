@@ -8,5 +8,4 @@ public sealed class WeatherForecast
     public IReadOnlyList<DailyForecast> DailyForecasts { get; init; } = [];
     public IReadOnlyList<HourlyForecast> HourlyForecasts { get; init; } = [];
     public string CurrentBackgroundImage { get; init; } = string.Empty;
-
 }

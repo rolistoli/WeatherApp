@@ -11,13 +11,10 @@ namespace WeatherApp.Views;
 
 public partial class SearchPage : ContentPage
 {
-    private readonly INavigationService navigationService;
-
-    public SearchPage(SearchViewModel viewModel, INavigationService navigationService)
+    public SearchPage(SearchViewModel viewModel)
     {
         InitializeComponent();
         BindingContext = viewModel;
-        this.navigationService = navigationService;
 
         MapControl.Map = new Mapsui.Map
         {
@@ -43,7 +40,6 @@ public partial class SearchPage : ContentPage
 
     private void CityEntry_Focused(object sender, FocusEventArgs e)
     {
-        // clear any existing pins when the search entry gains focus
         try
         {
             var map = MapControl.Map;
@@ -66,34 +62,19 @@ public partial class SearchPage : ContentPage
     private async void MapControl_MapTapped(object sender, MapEventArgs e)
     {
         if (MapControl.Map is null)
+        {
             return;
-
-        var (lon, lat) = SphericalMercator.ToLonLat(
-            e.WorldPosition.X,
-            e.WorldPosition.Y);
+        }
 
         if (BindingContext is SearchViewModel vm)
         {
+            var (lon, lat) = SphericalMercator.ToLonLat(e.WorldPosition.X, e.WorldPosition.Y);
+
             var loc = new CityLocation { Latitude = lat, Longitude = lon };
 
-            // clear search entry and results
-            vm.CityName = string.Empty;
-            vm.HasResults = false;
-            vm.Results.Clear();
-
-            // mark navigating state so UI shows activity indicator
-            vm.IsNavigating = true;
-
-            // draw pin first
             AddPinAtLocation(lat, lon);
 
-            // allow UI to render the pin before heavy work
-            await Task.Yield();
-
-            // show popup via navigation service (modal) using DI
-            await navigationService.ShowLocationPopupAsync(loc);
-
-            vm.IsNavigating = false;
+            await vm.HandleMapTapAsync(loc);
         }
     }
 

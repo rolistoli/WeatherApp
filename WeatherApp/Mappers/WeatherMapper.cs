@@ -9,6 +9,11 @@ public static class WeatherMapper
 {
     public static IReadOnlyList<CityLocation> ToLocations(GeocodingSearchResponseDto dto)
     {
+        if (dto is null)
+        {
+            throw new ArgumentNullException(nameof(dto));
+        }
+
         return dto.Results
             .Where(result => !string.IsNullOrWhiteSpace(result.Name))
             .Select(result => new CityLocation
@@ -25,9 +30,19 @@ public static class WeatherMapper
 
     public static WeatherForecast ToWeatherForecast(WeatherForecastResponseDto dto)
     {
+        if (dto is null)
+        {
+            throw new ArgumentNullException(nameof(dto));
+        }
+
+        if (dto.Current is null)
+        {
+            throw new InvalidOperationException("Weather response is missing current weather information.");
+        }
+
         if (dto.Current.Temperature2m is null || dto.Current.WeatherCode is null)
         {
-            throw new Exception("");
+            throw new InvalidOperationException("Current weather missing temperature or weather code.");
         }
 
         var daily = dto.Daily;
@@ -41,7 +56,7 @@ public static class WeatherMapper
 
         if (itemCount == 0)
         {
-            throw new Exception("");
+            throw new InvalidOperationException("Daily forecast data is empty.");
         }
 
         var dailyForecasts = new List<DailyForecast>(itemCount);
@@ -75,6 +90,10 @@ public static class WeatherMapper
 
     private static IReadOnlyList<HourlyForecast> ToHourlyForecasts(HourlyWeatherDto hourly)
     {
+        if (hourly is null)
+        {
+            throw new ArgumentNullException(nameof(hourly));
+        }
         var count = new[] { hourly.Time.Count, hourly.Temperature2m.Count, hourly.WeatherCode.Count }.Min();
         var list = new List<HourlyForecast>(count);
 
@@ -96,9 +115,7 @@ public static class WeatherMapper
     public static CityLocation ToLocation(NominatimReverseDto dto, double defaultLatitude, double defaultLongitude)
     {
         if (dto is null)
-        {
             throw new ArgumentNullException(nameof(dto));
-        }
 
         var name = dto.DisplayName ?? string.Empty;
         var city = dto.Address?.City ?? dto.Address?.Town ?? dto.Address?.Village ?? dto.Address?.County ?? string.Empty;
@@ -130,11 +147,9 @@ public static class WeatherMapper
     public static PointWeather ToPointWeather(PointWeatherDto dto)
     {
         if (dto is null)
-        {
             throw new ArgumentNullException(nameof(dto));
-        }
 
-        var cw = dto.CurrentWeather;
+        var cw = dto.CurrentWeather ?? throw new InvalidOperationException("Point weather response is missing current weather.");
 
         return new PointWeather
         {

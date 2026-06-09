@@ -1,5 +1,4 @@
 namespace WeatherApp.Models;
-
 public sealed class PointWeather
 {
     public double Temperature { get; init; }

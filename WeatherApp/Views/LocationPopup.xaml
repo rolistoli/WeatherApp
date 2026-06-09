@@ -9,19 +9,19 @@
              HorizontalOptions="Center"
              VerticalOptions="End">
 
-
     <Border BackgroundColor="White" 
-                Stroke="Black"
-                StrokeShape="RoundRectangle 18" WidthRequest="360" HeightRequest="130"
-                IsEnabled="{Binding IsNotLoading}"             
-                IsVisible="{Binding IsVisible}">
+            Stroke="Black"
+            StrokeShape="RoundRectangle 18"
+            WidthRequest="360" HeightRequest="130"
+            IsEnabled="{Binding IsNotLoading}">
 
-        <Grid IsClippedToBounds="True">
+        <Grid>
 
             <Image Source="{Binding WeatherImage}" Aspect="AspectFit" HeightRequest="120"/>
 
-            <Button x:Name="CloseButton" HorizontalOptions="End" VerticalOptions="Start" Background="Transparent"
-                        Command="{Binding CloseCommand}" Clicked="OnCloseButtonClicked">
+            <Button HorizontalOptions="End" VerticalOptions="Start"
+                    Background="Transparent"
+                    Command="{Binding CloseCommand}">
                 <Button.ImageSource>
                     <FontImageSource Glyph="✕" Size="18" Color="Black" />
                 </Button.ImageSource>
@@ -29,26 +29,30 @@
 
             <StackLayout Padding="12" Grid.Row="1">
                 <Label Text="{Binding Title}"
-                           FontAttributes="Bold" />
+                       FontAttributes="Bold"/>
+                
                 <Label Text="{Binding Subtitle}"
-                           FontSize="Small" TextColor="Gray" HeightRequest="18" />
+                       FontSize="Small" 
+                       TextColor="Gray" 
+                       HeightRequest="18" />
 
                 <HorizontalStackLayout VerticalOptions="Center" Spacing="12">
                     <Label Text="{Binding Temperature}"
-                               FontSize="20" 
-                               FontAttributes="Bold" 
-                               HeightRequest="28" />
+                           FontSize="20" 
+                           FontAttributes="Bold" 
+                           HeightRequest="28" />
                 </HorizontalStackLayout>
 
                 <Grid>
                     <Label Text="{Binding Description}" FontSize="18"
-                               TextColor="Gray" HeightRequest="26"
-                               VerticalOptions="End"
-                               FontAttributes="Bold"/>
+                           TextColor="Gray" HeightRequest="26"
+                           VerticalOptions="End"
+                           FontAttributes="Bold"/>
+                    
                     <Button Text="Detalhes" Command="{Binding DetailsCommand}"
-                                HorizontalOptions="End"
-                                Background="LightBlue" TextColor="Black" FontAttributes="Bold"
-                                IsEnabled="{Binding IsNotLoading}" IsVisible="{Binding IsNotLoading}"/>
+                            HorizontalOptions="End"
+                            Background="LightBlue" TextColor="Black" FontAttributes="Bold"
+                            IsEnabled="{Binding IsNotLoading}" IsVisible="{Binding IsNotLoading}"/>
                 </Grid>
             </StackLayout>
 
