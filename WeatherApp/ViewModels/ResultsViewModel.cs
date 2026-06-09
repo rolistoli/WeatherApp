@@ -1,6 +1,7 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using CommunityToolkit.Mvvm.Input;
 using WeatherApp.Helpers;
 using WeatherApp.Models;
 using WeatherApp.Services.Interfaces;
@@ -11,43 +12,32 @@ public sealed partial class ResultsViewModel : BaseViewModel
 {
     private readonly IWeatherService weatherService;
     private CityLocation? currentLocation;
-    private WeatherForecast? currentForecast;
-
-    private string locationName = string.Empty;
-    private string currentTemperature = string.Empty;
-    private string weatherDescription = string.Empty;
-    private bool hasForecast;
 
     public ResultsViewModel(IWeatherService weatherService)
     {
         this.weatherService = weatherService;
     }
 
-    public string LocationName
-    {
-        get => locationName;
-        set => SetProperty(ref locationName, value);
-    }
+    [ObservableProperty]
+    private string locationName = string.Empty;
 
-    public string CurrentTemperature
-    {
-        get => currentTemperature;
-        set => SetProperty(ref currentTemperature, value);
-    }
+    [ObservableProperty]
+    private string currentTemperature = string.Empty;
 
-    public string WeatherDescription
-    {
-        get => weatherDescription;
-        set => SetProperty(ref weatherDescription, value);
-    }
+    [ObservableProperty]
+    private string weatherDescription = string.Empty;
 
-    public bool HasForecast
-    {
-        get => hasForecast;
-        set => SetProperty(ref hasForecast, value);
-    }
+    [ObservableProperty]
+    private string currentDay = string.Empty;
+
+    [ObservableProperty]
+    private bool hasForecast;
+
+    [ObservableProperty]
+    private string currentBackgroundImage = string.Empty;
 
     public ObservableCollection<DailyForecast> Forecast { get; } = [];
+    public ObservableCollection<HourlyForecast> Hourly { get; } = new();
 
     public async Task LoadAsync(CityLocation location)
     {
@@ -81,8 +71,10 @@ public sealed partial class ResultsViewModel : BaseViewModel
 
         try
         {
-            var forecast = await weatherService.GetForecastAsync(currentLocation.Latitude, currentLocation.Longitude);
-            currentForecast = forecast;
+            var forecast = await weatherService.GetForecastAsync(
+                currentLocation.Latitude,
+                currentLocation.Longitude);
+
             ApplyForecast(forecast);
             HasForecast = true;
         }      
@@ -107,6 +99,15 @@ public sealed partial class ResultsViewModel : BaseViewModel
     {
         CurrentTemperature = $"{forecast.CurrentTemperature:F1} °C";
         WeatherDescription = WeatherCodeDescriptions.GetDescription(forecast.CurrentWeatherCode);
+        CurrentBackgroundImage = forecast.CurrentBackgroundImage;
+
+        // set current day from first daily forecast if available
+        if (forecast.DailyForecasts != null && forecast.DailyForecasts.Count > 0)
+        {
+            CurrentDay = FormatDate(forecast.DailyForecasts[0].DateValue);
+        }
+
+        Hourly.Clear();
 
         Forecast.Clear();
 
@@ -122,6 +123,11 @@ public sealed partial class ResultsViewModel : BaseViewModel
                 Description = WeatherCodeDescriptions.GetDescription(dailyForecast.WeatherCode),
                 TemperatureRange = $"{dailyForecast.TemperatureMin:F0}°C / {dailyForecast.TemperatureMax:F0}°C"
             });
+        }
+
+        foreach (var hourly in forecast.HourlyForecasts)
+        {
+            Hourly.Add(hourly);
         }
     }
 

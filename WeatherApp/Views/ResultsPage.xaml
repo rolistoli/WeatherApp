@@ -5,6 +5,9 @@
              xmlns:viewModels="clr-namespace:WeatherApp.ViewModels" 
              x:Class="WeatherApp.Views.ResultsPage" 
              x:DataType="viewModels:ResultsViewModel">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Voltar" Clicked="OnBackClicked" Priority="0" Order="Primary" />
+    </ContentPage.ToolbarItems>
     <ScrollView>
         <VerticalStackLayout x:Name="PageContent" 
                              Padding="24,28" 
@@ -42,22 +45,48 @@
 
             <VerticalStackLayout IsVisible="{Binding HasForecast}"  
                                  Spacing="22">
-                <Border Padding="22"  
-                        StrokeShape="RoundRectangle 22"  
-                        BackgroundColor="{StaticResource Primary}">
-                    <VerticalStackLayout Spacing="8">
-                        <Label x:Name="NowLabel"  
-                               TextColor="{StaticResource White}"  
-                               FontAttributes="Bold" />
-                        <Label Text="{Binding CurrentTemperature}"  
-                               TextColor="{StaticResource White}"  
-                               FontSize="48"  
-                               FontAttributes="Bold" />
-                        <Label Text="{Binding WeatherDescription}"  
-                               TextColor="{StaticResource White}"  
-                               FontSize="18" />
-                    </VerticalStackLayout>
-                </Border>
+                <Frame Padding="0" CornerRadius="22" HasShadow="False" IsClippedToBounds="True">
+                    <Grid>
+                        <Image Source="{Binding CurrentBackgroundImage}" Aspect="AspectFill" />
+                        <!-- dark overlay for legibility -->
+                        <BoxView BackgroundColor="#80000000" />
+
+                        <VerticalStackLayout Padding="22" Spacing="8" VerticalOptions="Center">
+                            <Label x:Name="NowLabel" Text="{Binding CurrentDay}"
+                                   TextColor="{StaticResource White}"
+                                   FontAttributes="Bold" />
+                            <Label Text="{Binding CurrentTemperature}"
+                                   TextColor="{StaticResource White}"
+                                   FontSize="48"
+                                   FontAttributes="Bold" />
+                            <Label Text="{Binding WeatherDescription}"
+                                   TextColor="{StaticResource White}"
+                                   FontSize="16"
+                                   LineBreakMode="WordWrap" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Frame>
+
+                <!-- hourly scroll section -->
+                <CollectionView ItemsLayout="HorizontalList" ItemsSource="{Binding Hourly}" HeightRequest="90" Margin="0,6,0,6">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:HourlyForecast">
+                            <Frame Padding="0" Margin="6,0" CornerRadius="12" HasShadow="False">
+                                <Frame.Background>
+                                    <ImageBrush ImageSource="{Binding BackgroundImageName}" />
+                                </Frame.Background>
+
+                                <Grid HeightRequest="80" WidthRequest="72">
+                                    <BoxView BackgroundColor="#80000000" />
+                                    <VerticalStackLayout Spacing="2" HorizontalOptions="Center" VerticalOptions="Center">
+                                        <Label Text="{Binding HourLabel}" FontSize="12" TextColor="White" HorizontalTextAlignment="Center" />
+                                        <Label Text="{Binding TemperatureDisplay}" FontSize="14" FontAttributes="Bold" TextColor="White" HorizontalTextAlignment="Center" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
 
                 <VerticalStackLayout Spacing="12">
                     <Label x:Name="FiveDayForecastLabel"  

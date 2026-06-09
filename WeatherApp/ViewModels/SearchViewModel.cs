@@ -45,6 +45,7 @@ public sealed class SearchViewModel : BaseViewModel
             }
 
             _ = SelectLocationAsync(value);
+            SelectedLocation = null;
         }
     }
 
@@ -100,6 +101,13 @@ public sealed class SearchViewModel : BaseViewModel
             return Task.CompletedTask;
         }
 
+        // Keep existing behavior for other callers. Navigation from map taps will use OpenDetailsAsync instead.
+        return navigationService.GoToResultsAsync(location);
+    }
+
+    // Called by UI (for example a popup) to navigate to details for a location
+    public Task OpenDetailsAsync(CityLocation location)
+    {
         return navigationService.GoToResultsAsync(location);
     }
     private void ApplyResults(IReadOnlyList<CityLocation> results)

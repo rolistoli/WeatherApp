@@ -10,8 +10,6 @@ public static class AppSettings
 {
     private const string ThemePreferenceKey = "theme_mode";
 
-    public static event EventHandler? LanguageChanged;
-
     public static ThemeMode ThemeMode
     {
         get

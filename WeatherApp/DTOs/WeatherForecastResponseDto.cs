@@ -30,6 +30,8 @@ public sealed class WeatherForecastResponseDto
 
     [JsonPropertyName("daily")]
     public DailyWeatherDto Daily { get; init; } = new();
+    [JsonPropertyName("hourly")]
+    public HourlyWeatherDto Hourly { get; init; } = new();
 }
 
 public sealed class CurrentWeatherDto
@@ -45,6 +47,18 @@ public sealed class CurrentWeatherDto
 
     [JsonPropertyName("weather_code")]
     public int? WeatherCode { get; init; }
+}
+
+public sealed class HourlyWeatherDto
+{
+    [JsonPropertyName("time")]
+    public List<string> Time { get; init; } = [];
+
+    [JsonPropertyName("temperature_2m")]
+    public List<double> Temperature2m { get; init; } = [];
+
+    [JsonPropertyName("weather_code")]
+    public List<int> WeatherCode { get; init; } = [];
 }
 
 public sealed class DailyWeatherDto

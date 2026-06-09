@@ -6,6 +6,7 @@ public interface IWeatherService
 {
     Task<WeatherForecast> GetForecastAsync(
         double latitude,
-        double longitude,
-        CancellationToken cancellationToken = default);
+        double longitude);
+
+    Task<PointWeather> GetPointWeatherAsync(double latitude, double longitude);
 }

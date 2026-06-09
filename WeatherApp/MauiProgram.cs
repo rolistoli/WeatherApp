@@ -28,13 +28,23 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
-        builder.Services.AddSingleton<HttpClient>();
+        builder.Services.AddSingleton(sp =>
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("WeatherApp/1.0");
+            client.DefaultRequestHeaders.From = "jmiguelroliveira@gmail.com";
+            return client;
+        });
         builder.Services.AddSingleton<IGeocodingService, GeocodingService>();
         builder.Services.AddSingleton<INavigationService, AppNavigationService>();
         builder.Services.AddSingleton<IWeatherService, WeatherService>();
 
         builder.Services.AddTransient<SearchViewModel>();
         builder.Services.AddTransient<SearchPage>();
+        builder.Services.AddTransient<ResultsViewModel>();
+        builder.Services.AddTransient<ResultsPage>();
+        builder.Services.AddTransient<LocationPopupViewModel>();
+        builder.Services.AddTransient<LocationPopup>();
 
 
         return builder.Build();

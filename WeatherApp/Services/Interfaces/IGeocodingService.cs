@@ -9,4 +9,6 @@ public interface IGeocodingService
         int count = 10,
         string language = "en",
         string format = "json");
+
+    Task<CityLocation?> ReverseAsync(double latitude, double longitude, string language = "en");
 }

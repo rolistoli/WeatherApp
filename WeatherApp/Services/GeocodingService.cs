@@ -38,4 +38,38 @@ public sealed class GeocodingService(HttpClient httpClient) : IGeocodingService
 
         return WeatherMapper.ToLocations(dto);
     }
+
+    public async Task<CityLocation?> ReverseAsync(double latitude, double longitude, string language = "en")
+    {
+        // use Nominatim reverse to get display name and address fields; default language: Portuguese
+        var latValue = latitude.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var lonValue = longitude.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+        var requestUri = $"https://nominatim.openstreetmap.org/reverse?lat={latValue}&lon={lonValue}&format=jsonv2&accept-language=pt";
+
+        using var response = await httpClient.GetAsync(requestUri);
+
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+
+        response.EnsureSuccessStatusCode();
+
+        var dto = await response.Content.ReadFromJsonAsync<WeatherApp.DTOs.NominatimReverseDto>();
+        if (dto is null) return null;
+
+        var name = dto.DisplayName ?? string.Empty;
+        var city = dto.Address?.City ?? dto.Address?.Town ?? dto.Address?.Village ?? dto.Address?.County ?? string.Empty;
+
+        return new CityLocation
+        {
+            Id = dto.PlaceId,
+            Name = city ?? name,
+            Latitude = double.TryParse(dto.Lat, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var latParsed) ? latParsed : latitude,
+            Longitude = double.TryParse(dto.Lon, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var lonParsed) ? lonParsed : longitude,
+            Country = dto.Address?.Country ?? string.Empty,
+            Admin1 = dto.Address?.State ?? string.Empty
+        };
+    }
 }

@@ -32,26 +32,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
-
-        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
 
         <MauiImage Include="Resources\Images\*" />
-        <MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
 
         <MauiFont Include="Resources\Fonts\*" />
 
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
     </ItemGroup>
 
+    <!-- Keep Android resources in Platforms/Android so platform-specific drawables and styles are packaged -->
+
     <ItemGroup>
-      <AndroidResource Remove="_Views\**" />
-      <Compile Remove="_Views\**" />
-      <EmbeddedResource Remove="_Views\**" />
-      <MauiCss Remove="_Views\**" />
-      <MauiXaml Remove="_Views\**" />
-      <None Remove="_Views\**" />
+      <None Remove="Resources\AppIcon\appicon.png" />
+      <None Remove="Resources\Splash\splash.png" />
     </ItemGroup>
+
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.60" />
@@ -60,6 +55,20 @@
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="Mapsui.Maui" Version="5.0.0" />
 	</ItemGroup>
+
+
+    <ItemGroup>
+      <MauiIcon Include="Resources\AppIcon\appicon.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </MauiIcon>
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <MauiSplashScreen Include="Resources\Splash\splash.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </MauiSplashScreen>
+    </ItemGroup>
 
     <ItemGroup>
       <MauiXaml Update="Views\MainPage.xaml">

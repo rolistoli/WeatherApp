@@ -16,14 +16,34 @@ public sealed class AppNavigationService(IServiceProvider serviceProvider) : INa
             await viewModel.LoadAsync(location);
 
 
-            var navigation = Application.Current?.Windows.FirstOrDefault()?.Page?.Navigation;
-
-            if (navigation is null)
-            {
-                throw new InvalidOperationException("Navigation is not available.");
-            }
-
-            await navigation.PushAsync(page);
         }
+
+        var navigation = Application.Current?.Windows.FirstOrDefault()?.Page?.Navigation;
+
+        if (navigation is null)
+        {
+            throw new InvalidOperationException("Navigation is not available.");
+        }
+
+        await navigation.PushAsync(page);
+    }
+
+    public async Task GoToResultsModalAsync(CityLocation location)
+    {
+        var page = serviceProvider.GetRequiredService<ResultsPage>();
+
+        if (page.BindingContext is ResultsViewModel viewModel)
+        {
+            await viewModel.LoadAsync(location);
+        }
+
+        var navigation = Application.Current?.Windows.FirstOrDefault()?.Page?.Navigation;
+
+        if (navigation is null)
+        {
+            throw new InvalidOperationException("Navigation is not available.");
+        }
+
+        await navigation.PushModalAsync(new NavigationPage(page));
     }
 }
