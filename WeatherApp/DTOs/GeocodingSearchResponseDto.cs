@@ -11,7 +11,7 @@ public sealed class GeocodingSearchResponseDto
     public double GenerationTimeMs { get; init; }
 }
 
-public abstract class GeocodingSearchResultDto
+public sealed class GeocodingSearchResultDto
 {
     [JsonPropertyName("id")]
     public long Id { get; init; }

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using SkiaSharp.Views.Maui.Controls.Hosting;
 using WeatherApp.Services;
 using WeatherApp.Services.Interfaces;
 using WeatherApp.ViewModels;
@@ -16,6 +17,7 @@ public static class MauiProgram
         builder
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
+            .UseSkiaSharp()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -30,11 +32,11 @@ public static class MauiProgram
         builder.Services.AddSingleton<IGeocodingService, GeocodingService>();
         builder.Services.AddSingleton<INavigationService, AppNavigationService>();
         builder.Services.AddSingleton<IWeatherService, WeatherService>();
-        
+
         builder.Services.AddTransient<SearchViewModel>();
         builder.Services.AddTransient<SearchPage>();
 
-        
+
         return builder.Build();
     }
 }

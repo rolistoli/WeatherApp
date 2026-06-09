@@ -1,7 +1,5 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Net;
-using System.Text.Json;
 using CommunityToolkit.Mvvm.Input;
 using WeatherApp.Helpers;
 using WeatherApp.Models;
@@ -14,6 +12,7 @@ public sealed partial class ResultsViewModel : BaseViewModel
     private readonly IWeatherService weatherService;
     private CityLocation? currentLocation;
     private WeatherForecast? currentForecast;
+
     private string locationName = string.Empty;
     private string currentTemperature = string.Empty;
     private string weatherDescription = string.Empty;
@@ -86,24 +85,10 @@ public sealed partial class ResultsViewModel : BaseViewModel
             currentForecast = forecast;
             ApplyForecast(forecast);
             HasForecast = true;
-        }
-        catch (HttpRequestException exception)
+        }      
+        catch (Exception ex)
         {
-            SetLocalizedError(exception.StatusCode is HttpStatusCode.BadRequest
-                ? "ResultsBadRequest"
-                : "WeatherConnectionError");
-        }
-        catch (TaskCanceledException)
-        {
-            SetLocalizedError("RequestTimeout");
-        }
-        catch (JsonException)
-        {
-            SetLocalizedError("WeatherInvalidApiData");
-        }
-        catch (InvalidOperationException exception)
-        {
-            ErrorMessage = exception.Message;
+            ErrorMessage = ex.Message;
         }
         finally
         {
@@ -117,15 +102,6 @@ public sealed partial class ResultsViewModel : BaseViewModel
         return IsNotLoading && currentLocation is not null;
     }
 
-    protected override void RefreshLocalizedState()
-    {
-        base.RefreshLocalizedState();
-
-        if (currentForecast is not null)
-        {
-            ApplyForecast(currentForecast);
-        }
-    }
 
     private void ApplyForecast(WeatherForecast forecast)
     {

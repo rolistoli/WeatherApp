@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:models="clr-namespace:WeatherApp.Models" 
+             xmlns:viewModels="clr-namespace:WeatherApp.ViewModels" 
+             x:Class="WeatherApp.Views.ResultsPage" 
+             x:DataType="viewModels:ResultsViewModel">
+    <ScrollView>
+        <VerticalStackLayout x:Name="PageContent" 
+                             Padding="24,28" 
+                             Spacing="22">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{Binding LocationName}" 
+                       FontSize="28" 
+                       FontAttributes="Bold" 
+                       SemanticProperties.HeadingLevel="Level1" />
+                <Label x:Name="DataSourceLabel" 
+                       FontSize="13" 
+                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray200}}" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout IsVisible="{Binding IsLoading}"
+                                 HorizontalOptions="Center"  
+                                 Spacing="10">
+                <ActivityIndicator IsRunning="{Binding IsLoading}" />
+                <Label x:Name="LoadingWeatherLabel"  
+                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray200}}" />
+            </VerticalStackLayout>
+
+            <Border IsVisible="{Binding HasError}"  
+                    Padding="16"  
+                    StrokeShape="RoundRectangle 14"  
+                    Stroke="#E57373"  
+                    BackgroundColor="#FFF4F4">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="{Binding ErrorMessage}"  
+                           TextColor="#B00020" />
+                    <Button x:Name="RetryButton"  
+                            Command="{Binding RetryCommand}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <VerticalStackLayout IsVisible="{Binding HasForecast}"  
+                                 Spacing="22">
+                <Border Padding="22"  
+                        StrokeShape="RoundRectangle 22"  
+                        BackgroundColor="{StaticResource Primary}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label x:Name="NowLabel"  
+                               TextColor="{StaticResource White}"  
+                               FontAttributes="Bold" />
+                        <Label Text="{Binding CurrentTemperature}"  
+                               TextColor="{StaticResource White}"  
+                               FontSize="48"  
+                               FontAttributes="Bold" />
+                        <Label Text="{Binding WeatherDescription}"  
+                               TextColor="{StaticResource White}"  
+                               FontSize="18" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <VerticalStackLayout Spacing="12">
+                    <Label x:Name="FiveDayForecastLabel"  
+                           FontSize="20"  
+                           FontAttributes="Bold"  
+                           SemanticProperties.HeadingLevel="Level2" />
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Forecast}"  
+                                         Spacing="10">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:DailyForecast">
+                                <Border Padding="16"  
+                                        StrokeShape="RoundRectangle 16"  
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}">
+                                    <Grid ColumnDefinitions="*,Auto"  
+                                          RowDefinitions="Auto,Auto"  
+                                          ColumnSpacing="12">
+                                        <Label Text="{Binding Date}"  
+                                               FontAttributes="Bold" />
+                                        <Label Grid.Column="1"  
+                                               Grid.RowSpan="2"  
+                                               Text="{Binding TemperatureRange}"  
+                                               FontAttributes="Bold"  
+                                               VerticalOptions="Center" />
+                                        <Label Grid.Row="1"  
+                                               Text="{Binding Description}"  
+                                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray200}}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>  

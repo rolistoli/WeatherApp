@@ -1,12 +1,120 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:mapsui="clr-namespace:Mapsui.UI.Maui;assembly=Mapsui.UI.Maui"
+    xmlns:viewModels="clr-namespace:WeatherApp.ViewModels"
+    xmlns:models="clr-namespace:WeatherApp.Models"
+    x:Class="WeatherApp.Views.SearchPage"
+    x:DataType="viewModels:SearchViewModel">
 
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="WeatherApp.Views.SearchPage">
-    
-    <ContentPage.Content>
-        
-        
-        
-    </ContentPage.Content>
+    <Grid>
+
+        <mapsui:MapControl
+            x:Name="MapControl" 
+            Loaded="MapControl_Loaded"
+            MapTapped="MapControl_MapTapped"/>
+
+        <Grid
+            Padding="24,36"
+            VerticalOptions="Start"
+            ZIndex="0">
+
+            <VerticalStackLayout Spacing="0">
+
+                <Border
+                    BackgroundColor="White"
+                    Stroke="Black"
+                    StrokeShape="RoundRectangle 18"
+                    Padding="0">
+
+                    <Grid
+                        Padding="18,12"
+                        ColumnDefinitions="Auto,*,Auto"
+                        ColumnSpacing="12"
+                        VerticalOptions="Center">
+
+                        <Label
+                            Text="⌕"
+                            FontSize="26"
+                            VerticalOptions="Center"
+                            TextColor="{AppThemeBinding Light={StaticResource Gray600},
+                            Dark={StaticResource Gray200}}" />
+
+                        <Entry
+                            x:Name="CityEntry"
+                            Grid.Column="1"
+                            Text="{Binding CityName}"
+                            ReturnType="Done"
+                            FontSize="18"
+                            Placeholder="Pesquisar cidade"
+                            BackgroundColor="Transparent" />
+
+                        <ActivityIndicator
+                            Grid.Column="2"
+                            IsRunning="{Binding IsLoading}"
+                            IsVisible="{Binding IsLoading}"
+                            WidthRequest="24"
+                            HeightRequest="24"
+                            VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+
+                <Border
+                    IsVisible="{Binding HasResults}"
+                    BackgroundColor="White"
+                    Stroke="Black"
+                    StrokeShape="RoundRectangle 14"
+                    Margin="0,6,0,0"
+                    ZIndex="1">
+
+                    <CollectionView
+                        ItemsSource="{Binding Results}"
+                        SelectedItem="{Binding SelectedLocation}"
+                        SelectionMode="Single"
+                        HeightRequest="260">
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:CityLocation">
+                                <Grid
+                                    Padding="18,12"
+                                    RowDefinitions="Auto,Auto">
+
+                                    <Label
+                                        Text="{Binding Name}"
+                                        FontSize="16"
+                                        FontAttributes="Bold" />
+
+                                    <HorizontalStackLayout Grid.Row="1" Spacing="6">
+                                        <Label
+                                            Text="{Binding Admin1}"
+                                            FontSize="13"
+                                            TextColor="{AppThemeBinding Light={StaticResource Gray600},
+                                            Dark={StaticResource Gray200}}" />
+
+                                        <Label
+                                            Text="{Binding Country}"
+                                            FontSize="13"
+                                            TextColor="{AppThemeBinding Light={StaticResource Gray600},
+                                            Dark={StaticResource Gray200}}" />
+                                    </HorizontalStackLayout>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Border>
+
+                <Border IsVisible="{Binding HasError}"
+                    Padding="16" 
+                    StrokeShape="RoundRectangle 14" 
+                    Stroke="#E57373" 
+                    BackgroundColor="#FFF4F4">
+                    
+                    <Label Text="{Binding ErrorMessage}"
+                           TextColor="#B00020" />
+                </Border>
+
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
 </ContentPage>

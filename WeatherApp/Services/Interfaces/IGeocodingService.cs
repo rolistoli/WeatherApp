@@ -8,6 +8,5 @@ public interface IGeocodingService
         string name,
         int count = 10,
         string language = "en",
-        string format = "json",
-        CancellationToken cancellationToken = default);
+        string format = "json");
 }

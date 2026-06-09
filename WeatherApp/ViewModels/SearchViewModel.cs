@@ -1,8 +1,7 @@
 using System.Collections.ObjectModel;
-using System.Net;
-using System.Text.Json;
 using WeatherApp.Models;
 using WeatherApp.Services.Interfaces;
+using WeatherApp.Views;
 
 namespace WeatherApp.ViewModels;
 
@@ -10,10 +9,10 @@ public sealed class SearchViewModel : BaseViewModel
 {
     private readonly IGeocodingService geocodingService;
     private readonly INavigationService navigationService;
+
     private string cityName = string.Empty;
     private CityLocation? selectedLocation;
     private bool hasResults;
-    // private CancellationTokenSource? suggestionsCancellationTokenSource;
 
     public SearchViewModel(IGeocodingService geocodingService, INavigationService navigationService)
     {
@@ -46,7 +45,6 @@ public sealed class SearchViewModel : BaseViewModel
             }
 
             _ = SelectLocationAsync(value);
-            SelectedLocation = null;
         }
     }
 
@@ -58,76 +56,40 @@ public sealed class SearchViewModel : BaseViewModel
 
     private async Task LoadSuggestionsAsync(string searchText)
     {
-        // suggestionsCancellationTokenSource?.Cancel();
-        // suggestionsCancellationTokenSource?.Dispose();
-        // suggestionsCancellationTokenSource = null;
-
-        var query = searchText.Trim();
         ClearError();
 
-        if (query.Length < 3)
-        {
-            HasResults = false;
-            Results.Clear();
-            IsLoading = false;
-            return;
-        }
-
-        // var cancellationTokenSource = new CancellationTokenSource();
-        // suggestionsCancellationTokenSource = cancellationTokenSource;
-        // var cancellationToken = cancellationTokenSource.Token;
+        var query = searchText.Trim();
 
         IsLoading = true;
 
         try
         {
-            // await Task.Delay(350, cancellationToken);
 
             var locations = await geocodingService.SearchAsync(
                 query,
-                count: 10,
-                cancellationToken: new CancellationToken());
+                count: 10);
 
-            // if (cancellationToken.IsCancellationRequested || query != CityName.Trim())
-            // {
-            //     return;
-            // }
-
-            if (locations.Count == 0)
+            if (locations is null || locations.Count == 0)
             {
                 HasResults = false;
                 Results.Clear();
-                SetLocalizedError("SearchNoSuggestions");
                 return;
             }
 
             ApplyResults(locations);
+
             HasResults = true;
         }
-        catch (HttpRequestException exception)
+        catch (Exception ex)
         {
-            SetLocalizedError(exception.StatusCode is HttpStatusCode.BadRequest
-                ? "SearchBadRequest"
-                : "SearchConnectionError");
-        }
-        catch (TaskCanceledException)
-        {
-            SetLocalizedError("RequestTimeout");
-        }
-        catch (JsonException)
-        {
-            SetLocalizedError("SearchInvalidApiResponse");
-        }
-        catch (InvalidOperationException)
-        {
-            SetLocalizedError("SearchUnexpectedApiResponse");
+            HasResults = false;
+            Results.Clear();
+
+            ErrorMessage = ex.Message;
         }
         finally
         {
-            // if (suggestionsCancellationTokenSource == cancellationTokenSource)
-            {
-                IsLoading = false;
-            }
+            IsLoading = false;
         }
     }
 
@@ -140,7 +102,6 @@ public sealed class SearchViewModel : BaseViewModel
 
         return navigationService.GoToResultsAsync(location);
     }
-
     private void ApplyResults(IReadOnlyList<CityLocation> results)
     {
         for (var index = 0; index < results.Count; index++)

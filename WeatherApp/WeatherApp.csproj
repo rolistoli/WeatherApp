@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFrameworks>net10.0-android;net10.0-ios</TargetFrameworks>
@@ -10,8 +10,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
 
-        <MauiXamlInflator>SourceGen</MauiXamlInflator>
-
         <ApplicationTitle>Weather App</ApplicationTitle>
         <ApplicationId>com.companyname.weatherapp</ApplicationId>
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
@@ -21,13 +19,12 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
     </PropertyGroup>
 
-    <!-- Debug Android: deploy mais rápido -->
     <PropertyGroup Condition="'$(Configuration)' == 'Debug' and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
         <AndroidUseSharedRuntime>true</AndroidUseSharedRuntime>
         <EmbedAssembliesIntoApk>false</EmbedAssembliesIntoApk>
+        <RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
     </PropertyGroup>
 
-    <!-- Release Android: app mais real/final -->
     <PropertyGroup Condition="'$(Configuration)' == 'Release' and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
         <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
         <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
@@ -35,23 +32,25 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <MauiIcon Include="Resources\AppIcon\appicon.svg"
-                  ForegroundFile="Resources\AppIcon\appiconfg.svg"
-                  Color="#512BD4" />
+        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
 
-        <MauiSplashScreen Include="Resources\Splash\splash.svg"
-                          Color="#512BD4"
-                          BaseSize="128,128" />
+        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
 
         <MauiImage Include="Resources\Images\*" />
-        <MauiImage Update="Resources\Images\dotnet_bot.png"
-                   Resize="True"
-                   BaseSize="300,185" />
+        <MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
 
         <MauiFont Include="Resources\Fonts\*" />
 
-        <MauiAsset Include="Resources\Raw\**"
-                   LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AndroidResource Remove="_Views\**" />
+      <Compile Remove="_Views\**" />
+      <EmbeddedResource Remove="_Views\**" />
+      <MauiCss Remove="_Views\**" />
+      <MauiXaml Remove="_Views\**" />
+      <None Remove="_Views\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -59,6 +58,28 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
         <PackageReference Include="CommunityToolkit.Maui" Version="14.2.0" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+		<PackageReference Include="Mapsui.Maui" Version="5.0.0" />
+	</ItemGroup>
+
+    <ItemGroup>
+      <MauiXaml Update="Views\MainPage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+      <MauiXaml Update="Views\ResultsPage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+      <MauiXaml Update="Views\SearchPage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Views\MainPage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </None>
+      <None Update="Views\SearchPage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </None>
     </ItemGroup>
 
 </Project>
