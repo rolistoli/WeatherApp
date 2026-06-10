@@ -62,6 +62,7 @@ public sealed partial class SearchViewModel : BaseViewModel
 
             if (string.IsNullOrWhiteSpace(query))
             {
+                HasResults = false;
                 return;
             }
 
@@ -83,6 +84,7 @@ public sealed partial class SearchViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
+            HasResults = false;
             await ShowErrorAsync(ex);
         }
         finally
@@ -99,6 +101,11 @@ public sealed partial class SearchViewModel : BaseViewModel
 
             await navigationService.GoToResultsAsync(location);
         }
+        catch (Exception ex)
+        {
+            HasResults = false;
+            await ShowErrorAsync(ex);
+        }
         finally
         {
             IsLoading = false;
@@ -106,7 +113,7 @@ public sealed partial class SearchViewModel : BaseViewModel
         }
     }
 
-    public async Task HandleMapTapAsync(CityLocation location)
+    public async Task<bool> HandleMapTapAsync(CityLocation location)
     {
         CityName = string.Empty;
         HasResults = false;
@@ -114,14 +121,19 @@ public sealed partial class SearchViewModel : BaseViewModel
 
         if (location is null)
         {
-            return;
+            return false;
         }
 
         IsLoading = true;
 
         try
         {
-            await navigationService.ShowLocationPopupAsync(location);
+            return await navigationService.ShowLocationPopupAsync(location);
+        }
+        catch (Exception ex)
+        {
+            await ShowErrorAsync(ex);
+            return false;
         }
         finally
         {

@@ -34,22 +34,22 @@ public sealed partial class ResultsViewModel : BaseViewModel
     public ObservableCollection<DailyForecast> Forecast { get; } = [];
     public ObservableCollection<HourlyForecast> Hourly { get; } = [];
 
-    public async Task LoadAsync(CityLocation location)
+    public async Task<bool> LoadAsync(CityLocation location)
     {
         currentLocation = location;
         LocationName = WeatherHelper.BuildLocationName(location);
 
-        await LoadWeatherAsync();
+        return await LoadWeatherAsync();
     }
 
-    private async Task LoadWeatherAsync()
+    private async Task<bool> LoadWeatherAsync()
     {
         Forecast.Clear();
         Hourly.Clear();
 
         if (currentLocation is null)
         {
-            return;
+            return false;
         }
 
         IsLoading = true;
@@ -62,7 +62,7 @@ public sealed partial class ResultsViewModel : BaseViewModel
 
             if (forecast is null)
             {
-                return;
+                return false;
             }
 
             CurrentTemperature = $"{forecast.CurrentTemperature:F1} °C";
@@ -94,11 +94,14 @@ public sealed partial class ResultsViewModel : BaseViewModel
                 {
                     Hourly.Add(hourly);
                 }
-            }           
+            }
+
+            return true;
         }
         catch (Exception ex)
         {
             await ShowErrorAsync(ex);
+            return false;
         }
         finally
         {

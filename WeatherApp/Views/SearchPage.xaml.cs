@@ -64,15 +64,24 @@ public partial class SearchPage : ContentPage
 
     private async void MapControl_MapTapped(object sender, MapEventArgs e)
     {
-        if (BindingContext is SearchViewModel vm)
+        try
         {
-            var (lon, lat) = SphericalMercator.ToLonLat(e.WorldPosition.X, e.WorldPosition.Y);
+            if (BindingContext is SearchViewModel vm)
+            {
+                var (lon, lat) = SphericalMercator.ToLonLat(e.WorldPosition.X, e.WorldPosition.Y);
 
-            var loc = new CityLocation { Latitude = lat, Longitude = lon };
+                var loc = new CityLocation { Latitude = lat, Longitude = lon };
 
-            AddPinAtLocation(lat, lon);
-
-            await vm.HandleMapTapAsync(loc);
+                var hasLocation = await vm.HandleMapTapAsync(loc);
+                if (hasLocation)
+                {
+                    AddPinAtLocation(lat, lon);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await ErrorPopupService.ShowErrorAsync(ex.Message);
         }
     }
 

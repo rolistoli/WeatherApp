@@ -8,7 +8,7 @@ namespace WeatherApp.Services;
 
 public sealed class AppNavigationService(IServiceProvider serviceProvider) : INavigationService
 {
-    public async Task GoToResultsAsync(CityLocation location)
+    public async Task<bool> GoToResultsAsync(CityLocation location)
     {
         try
         {
@@ -16,13 +16,18 @@ public sealed class AppNavigationService(IServiceProvider serviceProvider) : INa
 
             if (page.BindingContext is ResultsViewModel viewModel)
             {
-                await viewModel.LoadAsync(location);
+                var hasWeather = await viewModel.LoadAsync(location);
+                if (!hasWeather)
+                {
+                    return false;
+                }
             }
 
             var navigation = (Application.Current?.Windows.FirstOrDefault()?.Page?.Navigation)
                 ?? throw new InvalidOperationException("Navigation not available.");
 
             await navigation.PushAsync(page);
+            return true;
         }
         catch (Exception ex)
         {
@@ -30,7 +35,7 @@ public sealed class AppNavigationService(IServiceProvider serviceProvider) : INa
         }
     }
 
-    public async Task ShowLocationPopupAsync(CityLocation location)
+    public async Task<bool> ShowLocationPopupAsync(CityLocation location)
     {
         try
         {
@@ -38,7 +43,11 @@ public sealed class AppNavigationService(IServiceProvider serviceProvider) : INa
 
             if (popupView.BindingContext is LocationPopupViewModel viewModel)
             {
-                await viewModel.BindLocationAsync(location);
+                var hasLocation = await viewModel.BindLocationAsync(location);
+                if (!hasLocation)
+                {
+                    return false;
+                }
             }
 
             var navigation = Application.Current?.Windows.FirstOrDefault()?.Page?.Navigation
@@ -62,6 +71,7 @@ public sealed class AppNavigationService(IServiceProvider serviceProvider) : INa
             };
 
             await navigation.PushModalAsync(modal, false);
+            return true;
         }
         catch (Exception ex)
         {

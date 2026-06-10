@@ -68,7 +68,11 @@ public partial class LocationPopupViewModel : BaseViewModel
         {
             IsLoading = true;
 
-            await navigationService.GoToResultsAsync(Location);
+            var hasNavigated = await navigationService.GoToResultsAsync(Location);
+            if (hasNavigated)
+            {
+                await Close();
+            }
         }
         catch (Exception ex)
         {
@@ -76,13 +80,11 @@ public partial class LocationPopupViewModel : BaseViewModel
         }
         finally
         {
-            // ensure the popup is closed before navigating to the results screen
-            await Close();
             IsLoading = false;
         }
     }
 
-    public async Task BindLocationAsync(CityLocation loc)
+    public async Task<bool> BindLocationAsync(CityLocation loc)
     {
         IsLoading = true;
 
@@ -117,11 +119,13 @@ public partial class LocationPopupViewModel : BaseViewModel
         catch (Exception ex)
         {
             await ShowErrorAsync(ex);
-            return;
+            return false;
         }
         finally
         {
             IsLoading = false;
         }
+
+        return true;
     }
 }
