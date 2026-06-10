@@ -38,7 +38,7 @@
     </ItemGroup>
 
     <ItemGroup>
-		<MauiIcon Include="Resources\AppIcon\appicon.png" />
+      <MauiIcon Include="Resources\AppIcon\appicon.png" />
     </ItemGroup>
 
     <ItemGroup>
@@ -73,12 +73,6 @@
       <MauiXaml Update="Views\SettingsPage.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Update="Views\SettingsPage.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </None>
     </ItemGroup>
 	
 </Project>
