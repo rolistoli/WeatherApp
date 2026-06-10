@@ -1,20 +1,26 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using WeatherApp.Models;
 using WeatherApp.Services.Interfaces;
-using WeatherApp.Views;
 
 namespace WeatherApp.ViewModels;
 
-public sealed class SearchViewModel : BaseViewModel
+public sealed partial class SearchViewModel : BaseViewModel
 {
     private readonly IGeocodingService geocodingService;
     private readonly INavigationService navigationService;
 
+    [ObservableProperty]
     private string cityName = string.Empty;
+
+    [ObservableProperty]
     private CityLocation? selectedLocation;
-    private bool hasResults;
-    // removed isMapBusy: use IsNavigating for global busy state
-    private bool isNavigating;
+
+    [ObservableProperty]
+    private bool isEntryLoading;
+
+    public bool HasResults => Results.Count > 0;
 
     public SearchViewModel(IGeocodingService geocodingService, INavigationService navigationService)
     {
@@ -22,68 +28,47 @@ public sealed class SearchViewModel : BaseViewModel
         this.navigationService = navigationService;
     }
 
-    public string CityName
+    public ObservableCollection<CityLocation> Results { get; } = new();
+
+    protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
-        get => cityName;
-        set
+        base.OnPropertyChanged(e);
+
+        switch (e.PropertyName)
         {
-            if (SetProperty(ref cityName, value ?? string.Empty))
-            {
-                _ = LoadSuggestionsAsync(cityName);
-            }
+            case nameof(CityName):
+                _ = LoadSuggestionsAsync(CityName ?? string.Empty);
+                break;
+
+            case nameof(SelectedLocation):
+                if (SelectedLocation is null)
+                {
+                    return;
+                }
+
+                _ = HandleSelectionAsync(SelectedLocation);
+                break;
+
+            case nameof(Results):
+                OnPropertyChanged(nameof(HasResults));
+                break;
         }
-    }
-
-    public ObservableCollection<CityLocation> Results { get; } = [];
-
-    public CityLocation? SelectedLocation
-    {
-        get => selectedLocation;
-        set
-        {
-            if (!SetProperty(ref selectedLocation, value) || value is null)
-            {
-                return;
-            }
-
-            _ = HandleSelectionAsync(value);
-        }
-    }
-
-    public bool HasResults
-    {
-        get => hasResults;
-        set => SetProperty(ref hasResults, value);
-    }
-
-    // IsMapBusy removed; use IsNavigating only
-
-    public bool IsNavigating
-    {
-        get => isNavigating;
-        set => SetProperty(ref isNavigating, value);
     }
 
     private async Task LoadSuggestionsAsync(string searchText)
     {
-        ClearError();
-
-        var query = searchText.Trim();
-
-        // if the query is empty, do not call the geocoding service or show an error;
-        // simply hide the results dropdown
-        if (string.IsNullOrWhiteSpace(query))
-        {
-            HasResults = false;
-            Results.Clear();
-            IsLoading = false;
-            return;
-        }
-
-        IsLoading = true;
-
         try
         {
+            Results.Clear();
+
+            var query = searchText.Trim();
+
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return;
+            }
+
+            IsEntryLoading = true;
 
             var locations = await geocodingService.SearchAsync(
                 query,
@@ -91,21 +76,51 @@ public sealed class SearchViewModel : BaseViewModel
 
             if (locations is null || locations.Count == 0)
             {
-                HasResults = false;
-                Results.Clear();
                 return;
             }
 
             ApplyResults(locations);
-
-            HasResults = true;
         }
         catch (Exception ex)
         {
-            HasResults = false;
-            Results.Clear();
+            await ShowErrorAsync(ex);
+        }
+        finally
+        {
+            IsEntryLoading = false;
+        }
+    }
 
-            ErrorMessage = ex.Message;
+    private async Task HandleSelectionAsync(CityLocation location)
+    {
+        try
+        {
+            IsLoading = true;
+
+            await navigationService.GoToResultsAsync(location);
+        }
+        finally
+        {
+            IsLoading = false;
+            SelectedLocation = null;
+        }
+    }
+
+    public async Task HandleMapTapAsync(CityLocation location)
+    {
+        CityName = string.Empty;
+        Results.Clear();
+
+        if (location is null)
+        {
+            return;
+        }
+
+        IsLoading = true;
+
+        try
+        {
+            await navigationService.ShowLocationPopupAsync(location);
         }
         finally
         {
@@ -113,74 +128,6 @@ public sealed class SearchViewModel : BaseViewModel
         }
     }
 
-    private Task SelectLocationAsync(CityLocation? location)
-    {
-        if (location is null)
-        {
-            return Task.CompletedTask;
-        }
-
-        // Keep existing behavior for other callers. Navigation from map taps will use OpenDetailsAsync instead.
-        return navigationService.GoToResultsAsync(location);
-    }
-
-    private bool _isSelecting;
-
-    private async Task HandleSelectionAsync(CityLocation location)
-    {
-        if (_isSelecting) return;
-
-        _isSelecting = true;
-        try
-        {
-            // show blocking navigation UI (separate from search loading)
-            IsNavigating = true;
-
-            await navigationService.GoToResultsAsync(location);
-        }
-        finally
-        {
-            IsNavigating = false;
-            _isSelecting = false;
-            // clear selection on UI thread
-            SelectedLocation = null;
-        }
-    }
-
-    // Called by UI (for example a popup) to navigate to details for a location
-    public Task OpenDetailsAsync(CityLocation location)
-    {
-        return navigationService.GoToResultsAsync(location);
-    }
-
-    // Called by the view when the map is tapped. Moves the view-model logic
-    // that was previously in the code-behind into the VM so it's testable.
-    public async Task HandleMapTapAsync(CityLocation location)
-    {
-        if (location is null)
-            return;
-
-        // clear search entry and results
-        CityName = string.Empty;
-        HasResults = false;
-        Results.Clear();
-
-        // mark navigating state so UI shows activity indicator
-        IsNavigating = true;
-
-        try
-        {
-            // allow UI to render any immediate changes (for example a pin added by the view)
-            await Task.Yield();
-
-            // show popup via navigation service (modal)
-            await navigationService.ShowLocationPopupAsync(location);
-        }
-        finally
-        {
-            IsNavigating = false;
-        }
-    }
     private void ApplyResults(IReadOnlyList<CityLocation> results)
     {
         for (var index = 0; index < results.Count; index++)

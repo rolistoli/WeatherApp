@@ -9,9 +9,4 @@ public partial class ResultsPage : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
-
-    protected override bool OnBackButtonPressed()
-    {
-        return base.OnBackButtonPressed();
-    }
 }

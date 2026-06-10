@@ -4,7 +4,7 @@ using Mapsui.Projections;
 using Mapsui.Styles;
 using Mapsui.Tiling;
 using WeatherApp.Models;
-using WeatherApp.Services.Interfaces;
+using WeatherApp.Services;
 using WeatherApp.ViewModels;
 
 namespace WeatherApp.Views;
@@ -29,22 +29,26 @@ public partial class SearchPage : ContentPage
 
     private void MapControl_Loaded(object sender, EventArgs e)
     {
-        var lisbon = SphericalMercator.FromLonLat(-9.1393, 38.7223);
+        // lisbon coordinates
+        var (lon, lat) = SphericalMercator.FromLonLat(-9.1393, 38.7223);
 
-        MapControl.Map.Navigator.CenterOn(lisbon.x, lisbon.y);
+        MapControl.Map.Navigator.CenterOn(lon, lat);
         MapControl.Map.Navigator.ZoomTo(50);
 
         MapControl.Map.Navigator.OverrideZoomBounds = new MMinMax(50, 2000);
         MapControl.Map.Navigator.RotationLock = true;
     }
 
-    private void CityEntry_Focused(object sender, FocusEventArgs e)
+    private async void CityEntry_Focused(object sender, FocusEventArgs e)
     {
         try
         {
-            var map = MapControl.Map;
-            if (map is null)
+            if (MapControl.Map is null)
+            {
                 return;
+            }
+
+            var map = MapControl.Map;
 
             var existing = map.Layers.FirstOrDefault(l => l.Name == "Pins");
             if (existing is not null)
@@ -53,19 +57,14 @@ public partial class SearchPage : ContentPage
                 MapControl.Refresh();
             }
         }
-        catch
+        catch(Exception ex)
         {
-            // ignore
+            await ErrorPopupService.ShowErrorAsync(ex.Message);
         }
     }
 
     private async void MapControl_MapTapped(object sender, MapEventArgs e)
     {
-        if (MapControl.Map is null)
-        {
-            return;
-        }
-
         if (BindingContext is SearchViewModel vm)
         {
             var (lon, lat) = SphericalMercator.ToLonLat(e.WorldPosition.X, e.WorldPosition.Y);
@@ -78,13 +77,16 @@ public partial class SearchPage : ContentPage
         }
     }
 
-    private void AddPinAtLocation(double latitude, double longitude)
+    private async void AddPinAtLocation(double latitude, double longitude)
     {
         try
         {
-            var map = MapControl.Map;
-            if (map is null)
+            if(MapControl.Map is null)
+            {
                 return;
+            }
+
+            var map = MapControl.Map;
 
             var (lon, lat) = SphericalMercator.FromLonLat(longitude, latitude);
 
@@ -117,9 +119,9 @@ public partial class SearchPage : ContentPage
             map.Layers.Add(pinLayer);
             MapControl.Refresh();
         }
-        catch
+        catch(Exception ex)
         {
-            // ignore mapping errors
+            await ErrorPopupService.ShowErrorAsync(ex.Message);
         }
     }
 }

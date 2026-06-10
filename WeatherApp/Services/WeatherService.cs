@@ -19,13 +19,20 @@ public sealed class WeatherService(HttpClient httpClient) : IWeatherService
         var longitudeValue = longitude.ToString(CultureInfo.InvariantCulture);
         var requestUri = $"{ApiConstants.OpenMeteoForecastEndpoint}?latitude={latitudeValue}&longitude={longitudeValue}&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=5&timezone=auto";
 
-        using var response = await httpClient.GetAsync(requestUri);
-        response.EnsureSuccessStatusCode();
+        try
+        {
+            using var response = await httpClient.GetAsync(requestUri);
+            await ApiErrorHandler.EnsureSuccessAsync(response);
 
-        var dto = await response.Content.ReadFromJsonAsync<WeatherForecastResponseDto>()
-            ?? throw new InvalidOperationException("Empty response");
+            var dto = await response.Content.ReadFromJsonAsync<WeatherForecastResponseDto>()
+                ?? throw new InvalidOperationException("Empty response");
 
-        return WeatherMapper.ToWeatherForecast(dto);
+            return WeatherMapper.ToWeatherForecast(dto);
+        }
+        catch (Exception ex) when (ex is not ApiException)
+        {
+            throw new ApiException("An error occurred while fetching the weather forecast.", ex);
+        }
     }
 
     public async Task<PointWeather> GetPointWeatherAsync(
@@ -36,12 +43,19 @@ public sealed class WeatherService(HttpClient httpClient) : IWeatherService
         var longitudeValue = longitude.ToString(CultureInfo.InvariantCulture);
         var requestUri = $"{ApiConstants.OpenMeteoForecastEndpoint}?latitude={latitudeValue}&longitude={longitudeValue}&current_weather=true&timezone=auto";
 
-        using var response = await httpClient.GetAsync(requestUri);
-        response.EnsureSuccessStatusCode();
+        try
+        {
+            using var response = await httpClient.GetAsync(requestUri);
+            await ApiErrorHandler.EnsureSuccessAsync(response);
 
-        var dto = await response.Content.ReadFromJsonAsync<PointWeatherDto>()
-            ?? throw new InvalidOperationException("Empty response");
+            var dto = await response.Content.ReadFromJsonAsync<PointWeatherDto>()
+                ?? throw new InvalidOperationException("Empty response");
 
-        return WeatherMapper.ToPointWeather(dto);
+            return WeatherMapper.ToPointWeather(dto);
+        }
+        catch (Exception ex) when (ex is not ApiException)
+        {
+            throw new ApiException("An error occurred while fetching current point weather.", ex);
+        }
     }
 }

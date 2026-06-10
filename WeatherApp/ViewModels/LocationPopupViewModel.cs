@@ -2,7 +2,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using WeatherApp.Models;
 using WeatherApp.Services.Interfaces;
-using Microsoft.Maui.ApplicationModel;
 using WeatherApp.Helpers;
 
 namespace WeatherApp.ViewModels;
@@ -41,31 +40,39 @@ public partial class LocationPopupViewModel : BaseViewModel
     [RelayCommand]
     private async Task Close()
     {
-        var navigation = Application.Current?.Windows.FirstOrDefault()?.Page?.Navigation;
-        if (navigation is not null && navigation.ModalStack.Count > 0)
+        try
         {
-            try
+            var navigation = Application.Current?.Windows.FirstOrDefault()?.Page?.Navigation;
+            if (navigation is not null && navigation.ModalStack.Count > 0)
             {
+
                 await navigation.PopModalAsync(false);
                 return;
             }
-            catch
-            {
-                // fall through to hiding the popup if pop fails
-            }
+        }
+        catch (Exception ex)
+        {
+            await ShowErrorAsync(ex);
         }
     }
 
     [RelayCommand]
     private async Task Details()
     {
-        if (Location is null) return;
+        if (Location is null)
+        {
+            return;
+        }
 
         try
         {
             IsLoading = true;
- 
+
             await navigationService.GoToResultsAsync(Location);
+        }
+        catch (Exception ex)
+        {
+            await ShowErrorAsync(ex);
         }
         finally
         {
@@ -77,12 +84,13 @@ public partial class LocationPopupViewModel : BaseViewModel
 
     public async Task BindLocationAsync(CityLocation loc)
     {
+        IsLoading = true;
+
         Location = loc;
         Title = string.Empty;
         Subtitle = string.Empty;
         Temperature = string.Empty;
         Description = string.Empty;
-        IsLoading = true;
         WeatherImage = string.Empty;
 
         try
@@ -97,13 +105,7 @@ public partial class LocationPopupViewModel : BaseViewModel
                 Title = zone.Name ?? string.Empty;
                 Subtitle = zone.Country ?? string.Empty;
             }
-        }
-        catch
-        {
-        }
 
-        try
-        {
             var pw = await weatherService.GetPointWeatherAsync(
                 loc.Latitude,
                 loc.Longitude);
@@ -112,8 +114,9 @@ public partial class LocationPopupViewModel : BaseViewModel
             Description = pw.Description;
             WeatherImage = WeatherBackground.GetBackgroundForCode(pw.WeatherCode);
         }
-        catch
+        catch (Exception ex)
         {
+            await ShowErrorAsync(ex);
         }
         finally
         {

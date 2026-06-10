@@ -17,47 +17,50 @@
 
         <Grid>
 
-            <Image Source="{Binding WeatherImage}" Aspect="AspectFit" HeightRequest="120"/>
+            <Image Source="{Binding WeatherImage}" 
+                   Aspect="AspectFit" 
+                   HeightRequest="120"/>
 
-            <Button HorizontalOptions="End" VerticalOptions="Start"
+            <Button HorizontalOptions="End" 
+                    VerticalOptions="Start" 
+                    Text="✕"
+                    TextColor="Black"
                     Background="Transparent"
                     Command="{Binding CloseCommand}">
-                <Button.ImageSource>
-                    <FontImageSource Glyph="✕" Size="18" Color="Black" />
-                </Button.ImageSource>
             </Button>
 
-            <StackLayout Padding="12" Grid.Row="1">
+            <Button Text="Details" 
+                    Margin="12"
+                    Command="{Binding DetailsCommand}"
+                    VerticalOptions="End"
+                    HorizontalOptions="End"
+                    Background="LightBlue"
+                    TextColor="Black" 
+                    FontAttributes="Bold"
+                    IsEnabled="{Binding IsNotLoading}"
+                    IsVisible="{Binding IsNotLoading}"/>
+
+            <StackLayout Padding="12">
+
                 <Label Text="{Binding Title}"
                        FontAttributes="Bold"/>
-                
+
                 <Label Text="{Binding Subtitle}"
-                       FontSize="Small" 
-                       TextColor="Gray" 
-                       HeightRequest="18" />
+                       FontSize="14" 
+                       TextColor="Gray"/>
 
-                <HorizontalStackLayout VerticalOptions="Center" Spacing="12">
-                    <Label Text="{Binding Temperature}"
-                           FontSize="20" 
-                           FontAttributes="Bold" 
-                           HeightRequest="28" />
-                </HorizontalStackLayout>
+                <Label Text="{Binding Temperature}"
+                       FontSize="20" 
+                       FontAttributes="Bold"/>
 
-                <Grid>
-                    <Label Text="{Binding Description}" FontSize="18"
-                           TextColor="Gray" HeightRequest="26"
-                           VerticalOptions="End"
-                           FontAttributes="Bold"/>
-                    
-                    <Button Text="Detalhes" Command="{Binding DetailsCommand}"
-                            HorizontalOptions="End"
-                            Background="LightBlue" TextColor="Black" FontAttributes="Bold"
-                            IsEnabled="{Binding IsNotLoading}" IsVisible="{Binding IsNotLoading}"/>
-                </Grid>
+                <Label Text="{Binding Description}" FontSize="18"
+                       Margin="0,7,0,0"
+                       TextColor="DodgerBlue"
+                       FontAttributes="Bold"/>
+
             </StackLayout>
 
-            <ActivityIndicator Grid.RowSpan="2"
-                               IsRunning="{Binding IsLoading}" 
+            <ActivityIndicator IsRunning="{Binding IsLoading}" 
                                IsVisible="{Binding IsLoading}"
                                HorizontalOptions="Center"
                                VerticalOptions="Center"

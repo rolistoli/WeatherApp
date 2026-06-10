@@ -5,94 +5,112 @@
              xmlns:viewModels="clr-namespace:WeatherApp.ViewModels" 
              x:Class="WeatherApp.Views.ResultsPage" 
              x:DataType="viewModels:ResultsViewModel"
-             NavigationPage.HasBackButton="True" NavigationPage.HasNavigationBar="False">
+             NavigationPage.HasNavigationBar="False">
 
     <ScrollView>
-        <VerticalStackLayout Padding="24,28" Spacing="22">
-            <VerticalStackLayout Spacing="4">
-                <Label Text="{Binding LocationName}" 
-                       FontSize="28" 
-                       FontAttributes="Bold" 
-                       SemanticProperties.HeadingLevel="Level1" />
-                <Label x:Name="DataSourceLabel" 
-                       FontSize="13" 
-                       TextColor="{StaticResource Gray600}" />
-            </VerticalStackLayout>
+        <VerticalStackLayout Padding="24,28"
+                             Spacing="22">
 
-            <VerticalStackLayout IsVisible="{Binding IsLoading}"
-                                 HorizontalOptions="Center"  
-                                 Spacing="10">
-                <ActivityIndicator IsRunning="{Binding IsLoading}" />
-                <Label TextColor="{StaticResource Gray600}" />
-            </VerticalStackLayout>     
+            <Label Text="{Binding LocationName}"
+                   FontSize="28" 
+                   FontAttributes="Bold"/>
 
-            <VerticalStackLayout IsVisible="{Binding HasForecast}"  
-                                 Spacing="22">
-                <Border StrokeThickness="0" StrokeShape="RoundRectangle 22" Padding="0">
-                    <Grid>
-                        <Image Source="{Binding CurrentBackgroundImage}" Aspect="AspectFill" />
-                        <BoxView BackgroundColor="#80000000" />
+            <VerticalStackLayout Spacing="22">
+                <Border  StrokeShape="RoundRectangle 22" StrokeThickness="1"
+                         Background="LightBlue" 
+                         Stroke="LightGrey">
 
-                        <VerticalStackLayout Padding="22" Spacing="8" VerticalOptions="Center">
-                            <Label x:Name="NowLabel" Text="{Binding CurrentDay}"
-                                   TextColor="{StaticResource White}"
+                    <Grid ColumnDefinitions="0.6*,0.4*">
+
+                        <VerticalStackLayout Padding="22" 
+                                             Spacing="8" 
+                                             VerticalOptions="Center">
+
+                            <Label Text="{Binding CurrentDay}"
+                                   TextColor="White"
                                    FontAttributes="Bold" />
+
                             <Label Text="{Binding CurrentTemperature}"
-                                   TextColor="{StaticResource White}"
+                                   TextColor="White"
                                    FontSize="48"
                                    FontAttributes="Bold" />
+
                             <Label Text="{Binding WeatherDescription}"
-                                   TextColor="{StaticResource White}"
+                                   TextColor="White"
                                    FontSize="16"
-                                   LineBreakMode="WordWrap" />
+                                   FontAttributes="Bold" />
                         </VerticalStackLayout>
+
+                        <Image Source="{Binding CurrentBackgroundImage}"
+                               Aspect="AspectFill" 
+                               HeightRequest="150"
+                               Grid.Column="2"/>
+
                     </Grid>
                 </Border>
 
-                <CollectionView ItemsLayout="HorizontalList" ItemsSource="{Binding Hourly}" HeightRequest="90" Margin="0,6,0,6">
+                <CollectionView ItemsLayout="HorizontalList" 
+                                ItemsSource="{Binding Hourly}" 
+                                HeightRequest="90"
+                                Margin="0,6,0,6">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:HourlyForecast">
-                            <Border StrokeThickness="0" StrokeShape="RoundRectangle 22" Padding="0">
-                                <Grid HeightRequest="80" WidthRequest="72">
-                                    <Image Source="{Binding BackgroundImageName}" Aspect="AspectFill" />
-                                    <BoxView BackgroundColor="#80000000" />
+
+                            <Border StrokeThickness="1" StrokeShape="RoundRectangle 22" Margin="5,2" Background="WhiteSmoke" Stroke="LightBlue">
+                                <Grid HeightRequest="90" WidthRequest="72">
                                     <VerticalStackLayout Spacing="2" HorizontalOptions="Center" VerticalOptions="Center">
-                                        <Label Text="{Binding HourLabel}" FontSize="12" TextColor="White" HorizontalTextAlignment="Center" />
-                                        <Label Text="{Binding TemperatureDisplay}" FontSize="14" FontAttributes="Bold" TextColor="White" HorizontalTextAlignment="Center" />
+                                        <Image Source="{Binding BackgroundImageName}"
+                                               Aspect="AspectFill"  
+                                               HeightRequest="40" WidthRequest="40"/>
+
+                                        <Label Text="{Binding HourLabel}" 
+                                               FontSize="12" 
+                                               TextColor="CadetBlue" 
+                                               HorizontalTextAlignment="Center" />
+
+                                        <Label Text="{Binding TemperatureDisplay}"
+                                               FontSize="14" FontAttributes="Bold"
+                                               TextColor="CadetBlue"
+                                               HorizontalTextAlignment="Center" />
                                     </VerticalStackLayout>
                                 </Grid>
                             </Border>
                         </DataTemplate>
+
                     </CollectionView.ItemTemplate>
                 </CollectionView>
 
                 <VerticalStackLayout Spacing="12">
-                    <Label x:Name="FiveDayForecastLabel"  
-                           FontSize="20"  
-                           FontAttributes="Bold"  
-                           SemanticProperties.HeadingLevel="Level2" />
-                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Forecast}"  
+
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Forecast}" 
                                          Spacing="10">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="models:DailyForecast">
-                                <Border Padding="16"  
+
+                                <Border Padding="10,6" 
+                                        Background="LightBlue"
+                                        Stroke="Grey"
+                                        StrokeThickness="1"
                                         StrokeShape="RoundRectangle 16"  
-                                        BackgroundColor="{StaticResource White}">
+                                        BackgroundColor="White">
+
                                     <Grid ColumnDefinitions="*,Auto"  
                                           RowDefinitions="Auto,Auto"  
                                           ColumnSpacing="12">
-                                        <Label Text="{Binding Date}"  
-                                               FontAttributes="Bold" />
-                                        <Label Grid.Column="1"  
-                                               Grid.RowSpan="2"  
+
+                                        <Label Text="{Binding Date}"/>
+
+                                        <Label Grid.Column="1" Grid.RowSpan="2" 
                                                Text="{Binding TemperatureRange}"  
-                                               FontAttributes="Bold"  
+                                               FontAttributes="Bold"
                                                VerticalOptions="Center" />
+
                                         <Label Grid.Row="1"  
                                                Text="{Binding Description}"  
-                                               TextColor="{StaticResource Gray600}" />
+                                               TextColor="White"/>
                                     </Grid>
                                 </Border>
+                                
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
                     </VerticalStackLayout>

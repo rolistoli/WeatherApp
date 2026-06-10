@@ -1,48 +1,27 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-
+using WeatherApp.Services;
 
 namespace WeatherApp.ViewModels;
 
-public abstract class BaseViewModel : ObservableObject
+public abstract partial class BaseViewModel : ObservableObject
 {
-    private bool _isLoading;
-    private string _errorMessage = string.Empty;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsNotLoading))]
+    private bool isLoading;
 
     protected BaseViewModel()
     {
     }
 
-    public bool IsLoading
-    {
-        get => _isLoading;
-        set
-        {
-            if (SetProperty(ref _isLoading, value))
-            {
-                OnPropertyChanged(nameof(IsNotLoading));
-            }
-        }
-    }
-
     public bool IsNotLoading => !IsLoading;
 
-    public string ErrorMessage
+    protected Task ShowErrorAsync(Exception ex)
     {
-        get => _errorMessage;
-        set
+        if (ex is null)
         {
-            if (SetProperty(ref _errorMessage, value))
-            {
-                OnPropertyChanged(nameof(HasError));
-            }
+            return Task.CompletedTask;
         }
-    }
 
-    public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
-  
-
-    protected void ClearError()
-    {
-        ErrorMessage = string.Empty;
+        return ErrorPopupService.ShowErrorAsync(ex.Message);
     }
 }
