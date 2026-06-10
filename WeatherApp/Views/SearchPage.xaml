@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:mapsui="clr-namespace:Mapsui.UI.Maui;assembly=Mapsui.UI.Maui"
-    xmlns:viewModels="clr-namespace:WeatherApp.ViewModels"
-    xmlns:views="clr-namespace:WeatherApp.Views"
-    xmlns:models="clr-namespace:WeatherApp.Models"
-    x:Class="WeatherApp.Views.SearchPage"
-    x:DataType="viewModels:SearchViewModel"
-    NavigationPage.HasBackButton="True" NavigationPage.HasNavigationBar="False">   
+<ContentPage    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                xmlns:mapsui="clr-namespace:Mapsui.UI.Maui;assembly=Mapsui.UI.Maui"
+                xmlns:viewModels="clr-namespace:WeatherApp.ViewModels"
+                xmlns:views="clr-namespace:WeatherApp.Views"
+                xmlns:models="clr-namespace:WeatherApp.Models"
+                x:Class="WeatherApp.Views.SearchPage"
+                x:DataType="viewModels:SearchViewModel"
+                NavigationPage.HasNavigationBar="False">   
 
     <Grid IsEnabled="{Binding IsNotLoading}">
 
-        <mapsui:MapControl
-            x:Name="MapControl" 
-            Loaded="MapControl_Loaded"
-            MapTapped="MapControl_MapTapped"/>
+        <mapsui:MapControl x:Name="MapControl" 
+                           Loaded="MapControl_Loaded"
+                           MapTapped="MapControl_MapTapped"/>
 
         <ActivityIndicator IsVisible="{Binding IsLoading}" 
                            IsRunning="{Binding IsLoading}"
@@ -30,8 +28,8 @@
 
             <VerticalStackLayout>
 
-                <Border BackgroundColor="White"
-                        Stroke="Black"
+                <Border BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColor}, Dark={StaticResource SurfaceDark}}"
+                        Stroke="{AppThemeBinding Light={StaticResource SearchBorderColor}, Dark={StaticResource BorderDark}}"
                         StrokeShape="RoundRectangle 18">
 
                     <Grid Padding="18,12"
@@ -47,8 +45,9 @@
                         <Entry Grid.Column="1"
                                Text="{Binding CityName}"
                                ReturnType="Done"
+                               TextColor="{AppThemeBinding Light={StaticResource AppForegroundColor}, Dark={StaticResource AppForegroundDark}}"
                                FontSize="18"
-                               Placeholder="Pesquisar cidade"
+                               Placeholder="Search"
                                BackgroundColor="Transparent"
                                Focused="CityEntry_Focused" />
 
@@ -63,8 +62,8 @@
                 </Border>
 
                 <Border IsVisible="{Binding HasResults}"
-                        BackgroundColor="White"
-                        Stroke="Black"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColor}, Dark={StaticResource SurfaceDark}}"
+                        Stroke="{AppThemeBinding Light={StaticResource SearchBorderColor}, Dark={StaticResource BorderDark}}"
                         StrokeShape="RoundRectangle 14"
                         Margin="0,6,0,0"
                         ZIndex="1">
@@ -81,6 +80,7 @@
 
                                     <Label Text="{Binding Name}"
                                            FontSize="16"
+                                           TextColor="{AppThemeBinding Light={StaticResource AppForegroundColor}, Dark={StaticResource AppForegroundDark}}"
                                            FontAttributes="Bold" />
 
                                     <HorizontalStackLayout Grid.Row="1" Spacing="6">

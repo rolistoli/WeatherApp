@@ -6,4 +6,6 @@ public interface INavigationService
 {
     Task GoToResultsAsync(CityLocation location);
     Task ShowLocationPopupAsync(CityLocation location);
+    Task GoToSearchAsync();
+    Task ShowSettingsAsync();
 }

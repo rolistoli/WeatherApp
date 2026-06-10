@@ -16,39 +16,38 @@ public partial class SearchPage : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
 
-        MapControl.Map = new Mapsui.Map
-        {
-            Layers =
-            {
-                OpenStreetMap.CreateTileLayer()
-            }
-        };
-
+        MapControl.Map = new Mapsui.Map();
         MapControl.Map.Widgets.Clear();
     }
 
-    private void MapControl_Loaded(object sender, EventArgs e)
+    private async void MapControl_Loaded(object sender, EventArgs e)
     {
-        // lisbon coordinates
-        var (lon, lat) = SphericalMercator.FromLonLat(-9.1393, 38.7223);
+        try
+        {
+            // lisbon coordinates
+            var (lon, lat) = SphericalMercator.FromLonLat(-9.1393, 38.7223);
 
-        MapControl.Map.Navigator.CenterOn(lon, lat);
-        MapControl.Map.Navigator.ZoomTo(50);
+            MapControl.Map.Navigator.CenterOn(lon, lat);
+            MapControl.Map.Navigator.ZoomTo(50);
 
-        MapControl.Map.Navigator.OverrideZoomBounds = new MMinMax(50, 2000);
-        MapControl.Map.Navigator.RotationLock = true;
+            MapControl.Map.Navigator.OverrideZoomBounds = new MMinMax(50, 2000);
+            MapControl.Map.Navigator.RotationLock = true;
+
+            MapControl.Map.Layers.Add(OpenStreetMap.CreateTileLayer());
+        }
+        catch (Exception ex)
+        {
+            await ErrorPopupService.ShowErrorAsync(ex.Message);
+        }
     }
 
     private async void CityEntry_Focused(object sender, FocusEventArgs e)
     {
         try
         {
-            if (MapControl.Map is null)
-            {
-                return;
-            }
-
             var map = MapControl.Map;
+            if (map is null)
+                return;
 
             var existing = map.Layers.FirstOrDefault(l => l.Name == "Pins");
             if (existing is not null)
@@ -57,7 +56,7 @@ public partial class SearchPage : ContentPage
                 MapControl.Refresh();
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             await ErrorPopupService.ShowErrorAsync(ex.Message);
         }
@@ -81,12 +80,10 @@ public partial class SearchPage : ContentPage
     {
         try
         {
-            if(MapControl.Map is null)
-            {
-                return;
-            }
 
             var map = MapControl.Map;
+            if (map is null)
+                return;
 
             var (lon, lat) = SphericalMercator.FromLonLat(longitude, latitude);
 
@@ -119,7 +116,7 @@ public partial class SearchPage : ContentPage
             map.Layers.Add(pinLayer);
             MapControl.Refresh();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             await ErrorPopupService.ShowErrorAsync(ex.Message);
         }

@@ -20,7 +20,8 @@ public sealed partial class SearchViewModel : BaseViewModel
     [ObservableProperty]
     private bool isEntryLoading;
 
-    public bool HasResults => Results.Count > 0;
+    [ObservableProperty]
+    public bool hasResults;
 
     public SearchViewModel(IGeocodingService geocodingService, INavigationService navigationService)
     {
@@ -48,10 +49,6 @@ public sealed partial class SearchViewModel : BaseViewModel
 
                 _ = HandleSelectionAsync(SelectedLocation);
                 break;
-
-            case nameof(Results):
-                OnPropertyChanged(nameof(HasResults));
-                break;
         }
     }
 
@@ -76,10 +73,13 @@ public sealed partial class SearchViewModel : BaseViewModel
 
             if (locations is null || locations.Count == 0)
             {
+                HasResults = false;
                 return;
             }
 
             ApplyResults(locations);
+            HasResults = true;
+
         }
         catch (Exception ex)
         {
@@ -109,6 +109,7 @@ public sealed partial class SearchViewModel : BaseViewModel
     public async Task HandleMapTapAsync(CityLocation location)
     {
         CityName = string.Empty;
+        HasResults = false;
         Results.Clear();
 
         if (location is null)

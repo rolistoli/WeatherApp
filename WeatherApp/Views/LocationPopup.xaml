@@ -9,10 +9,10 @@
              HorizontalOptions="Center"
              VerticalOptions="End">
 
-    <Border BackgroundColor="White" 
-            Stroke="Black"
+    <Border BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColor}, Dark={StaticResource CardBackgroundDark}}" 
+            Stroke="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkAlt}}"
             StrokeShape="RoundRectangle 18"
-            WidthRequest="360" HeightRequest="130"
+            WidthRequest="360" HeightRequest="150"
             IsEnabled="{Binding IsNotLoading}">
 
         <Grid>
@@ -23,7 +23,8 @@
 
             <Button HorizontalOptions="End" 
                     VerticalOptions="Start" 
-                    Text="✕"
+                    ImageSource="close.png"
+                    WidthRequest="50"
                     TextColor="Black"
                     Background="Transparent"
                     Command="{Binding CloseCommand}">
@@ -34,8 +35,8 @@
                     Command="{Binding DetailsCommand}"
                     VerticalOptions="End"
                     HorizontalOptions="End"
-                    Background="LightBlue"
-                    TextColor="Black" 
+                    Background="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                    TextColor="{AppThemeBinding Light={StaticResource AppForegroundColor}, Dark={StaticResource AppForegroundDark}}" 
                     FontAttributes="Bold"
                     IsEnabled="{Binding IsNotLoading}"
                     IsVisible="{Binding IsNotLoading}"/>
@@ -43,6 +44,7 @@
             <StackLayout Padding="12">
 
                 <Label Text="{Binding Title}"
+                       TextColor="CadetBlue"
                        FontAttributes="Bold"/>
 
                 <Label Text="{Binding Subtitle}"
@@ -51,10 +53,11 @@
 
                 <Label Text="{Binding Temperature}"
                        FontSize="20" 
+                       TextColor="CadetBlue"
                        FontAttributes="Bold"/>
 
-                <Label Text="{Binding Description}" FontSize="18"
-                       Margin="0,7,0,0"
+                <Label Text="{Binding Description}" FontSize="18" VerticalOptions="End" 
+                       Margin="0,30,0,0"
                        TextColor="DodgerBlue"
                        FontAttributes="Bold"/>
 

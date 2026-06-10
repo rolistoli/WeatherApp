@@ -1,4 +1,6 @@
-﻿using WeatherApp.Views;
+using System.Globalization;
+using WeatherApp.Views;
+using WeatherApp.Helpers;
 
 namespace WeatherApp;
 
@@ -8,18 +10,29 @@ public partial class App : Application
 
 	public App(IServiceProvider serviceProvider)
 	{
+		SetEnglishCulture();
+
 		InitializeComponent();
-		// AppSettings.ApplySavedPreferences();
+
+		AppSettings.ApplySavedPreferences();
+
 		_serviceProvider = serviceProvider;
 	}
 
-	// Expose the application's service provider so views can resolve services when
-	// they are created by the XAML loader and can't receive constructor injection.
-	public IServiceProvider Services => _serviceProvider;
-
 	protected override Window CreateWindow(IActivationState? activationState)
 	{
-		var searchPage = _serviceProvider.GetRequiredService<SearchPage>();
+		var mainPage = _serviceProvider.GetRequiredService<MainPage>();
 
-		return new Window(new NavigationPage(searchPage));	}
+		return new Window(new NavigationPage(mainPage));
+	}
+
+	private static void SetEnglishCulture()
+	{
+		var culture = CultureInfo.GetCultureInfo("en-US");
+
+		CultureInfo.DefaultThreadCurrentCulture = culture;
+		CultureInfo.DefaultThreadCurrentUICulture = culture;
+		CultureInfo.CurrentCulture = culture;
+		CultureInfo.CurrentUICulture = culture;
+	}
 }

@@ -54,10 +54,10 @@ public sealed class AppNavigationService(IServiceProvider serviceProvider) : INa
                     HorizontalOptions = LayoutOptions.Fill,
                     VerticalOptions = LayoutOptions.Fill,
                     Children =
-                {
-                    new BoxView { BackgroundColor = Color.FromArgb("#80000000"), HorizontalOptions = LayoutOptions.Fill, VerticalOptions = LayoutOptions.Fill },
-                    popupView
-                }
+                    {
+                        new BoxView { BackgroundColor = Color.FromArgb("#80000000"), HorizontalOptions = LayoutOptions.Fill, VerticalOptions = LayoutOptions.Fill },
+                        popupView
+                    }
                 }
             };
 
@@ -67,5 +67,23 @@ public sealed class AppNavigationService(IServiceProvider serviceProvider) : INa
         {
             throw new ApiException("An error occurred.", ex);
         }
+    }
+
+    public async Task GoToSearchAsync()
+    {
+        var page = serviceProvider.GetRequiredService<SearchPage>();
+        var navigation = Application.Current?.Windows.FirstOrDefault()?.Page?.Navigation
+            ?? throw new InvalidOperationException("Navigation not available.");
+
+        await navigation.PushAsync(page);
+    }
+
+    public async Task ShowSettingsAsync()
+    {
+        var page = serviceProvider.GetRequiredService<SettingsPage>();
+        var navigation = Application.Current?.Windows.FirstOrDefault()?.Page?.Navigation
+            ?? throw new InvalidOperationException("Navigation not available.");
+
+        await navigation.PushAsync(page);
     }
 }

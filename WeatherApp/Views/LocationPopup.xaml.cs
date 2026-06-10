@@ -8,5 +8,5 @@ public partial class LocationPopup : ContentView
     {
         InitializeComponent();
         BindingContext = viewModel;
-    }
+    }   
 }

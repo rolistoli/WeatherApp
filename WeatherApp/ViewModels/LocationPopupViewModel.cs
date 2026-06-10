@@ -117,6 +117,7 @@ public partial class LocationPopupViewModel : BaseViewModel
         catch (Exception ex)
         {
             await ShowErrorAsync(ex);
+            return;
         }
         finally
         {

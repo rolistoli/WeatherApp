@@ -5,6 +5,8 @@ namespace WeatherApp.Helpers;
 
 public static class WeatherHelper
 {
+    private static readonly CultureInfo EnglishCulture = CultureInfo.GetCultureInfo("en-US");
+
     public static string BuildLocationName(CityLocation location)
     {
         if (location is null) throw new ArgumentNullException(nameof(location));
@@ -18,7 +20,7 @@ public static class WeatherHelper
     public static string FormatDate(string value)
     {
         return DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out var date)
-            ? date.ToString("ddd, dd MMM", CultureInfo.CurrentCulture)
+            ? date.ToString("ddd, dd MMM", EnglishCulture)
             : value;
     }
 }

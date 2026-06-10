@@ -32,12 +32,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-
         <MauiImage Include="Resources\Images\*" />
-
         <MauiFont Include="Resources\Fonts\*" />
-
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+    </ItemGroup>
+
+    <ItemGroup>
+		<MauiIcon Include="Resources\AppIcon\appicon.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <MauiSplashScreen Include="Resources\Splash\splash.png" Color="#E6F2FF" />
     </ItemGroup>
 
 
@@ -48,20 +53,6 @@
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="Mapsui.Maui" Version="5.0.0" />
 	</ItemGroup>
-
-
-    <ItemGroup>
-      <MauiIcon Include="Resources\AppIcon\appicon.png" BaseSize="64,64">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </MauiIcon>
-    </ItemGroup>
-
-
-    <ItemGroup>
-      <MauiSplashScreen Include="Resources\Splash\splash.png" Color="#87CEEB" BaseSize="256,256">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </MauiSplashScreen>
-    </ItemGroup>
 
     <ItemGroup>
       <MauiXaml Update="Views\Components\ErrorPopup.xaml">
@@ -79,6 +70,15 @@
       <MauiXaml Update="Views\SearchPage.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
+      <MauiXaml Update="Views\SettingsPage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Views\SettingsPage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </None>
     </ItemGroup>
 	
 </Project>

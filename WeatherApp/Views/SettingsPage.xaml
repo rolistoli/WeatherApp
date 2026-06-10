@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WeatherApp.Views.SettingsPage"
+             NavigationPage.HasNavigationBar="False"
+             x:DataType="viewModels:SettingsPageViewModel"
+             xmlns:viewModels="clr-namespace:WeatherApp.ViewModels"
+             Background="{AppThemeBinding Light={StaticResource AppBackgroundColor}, Dark={StaticResource AppBackgroundDark}}">
+   
+    <ScrollView>
+        <VerticalStackLayout x:Name="PageContent" Padding="24,28" Spacing="22">
+            <Label Text="Settings Page" FontSize="28" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource AppForegroundColor}, Dark={StaticResource AppForegroundDark}}" />
+            
+            <Border Padding="18" StrokeShape="RoundRectangle 8" Background="{AppThemeBinding Light={StaticResource CardBackgroundColor}, Dark={StaticResource CardBackgroundDark}}">
+                
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12" HeightRequest="50">
+                    <Border StrokeShape="RoundRectangle 20"
+                            Background="{AppThemeBinding Light={StaticResource CardBackgroundColor}, Dark={StaticResource SurfaceDark}}"
+                            Stroke="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkAlt}}"
+                            WidthRequest="120"
+                            HeightRequest="48">
+
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SetLightThemeCommand}" />
+                        </Border.GestureRecognizers>
+
+                        <HorizontalStackLayout Spacing="8"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center">
+                            
+                            <Image Source="light.png"
+                                   WidthRequest="22"
+                                   HeightRequest="22" />
+                            <Label Text="Light"
+                                   TextColor="{AppThemeBinding Light={StaticResource AppForegroundColor}, Dark={StaticResource AppForegroundDark}}"
+                                   VerticalOptions="Center" />
+                            
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <Border Grid.Column="1"
+                            StrokeShape="RoundRectangle 20"
+                            Background="{AppThemeBinding Light={StaticResource CardBackgroundColor}, Dark={StaticResource SurfaceDark}}"
+                            Stroke="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkAlt}}"
+                            WidthRequest="120"
+                            HeightRequest="48">
+
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SetDarkThemeCommand}" />
+                        </Border.GestureRecognizers>
+
+                        <HorizontalStackLayout Spacing="8"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center">
+                            
+                            <Image Source="dark.png"
+                                   WidthRequest="22"
+                                   HeightRequest="22" />
+                            <Label Text="Dark"
+                                   TextColor="{AppThemeBinding Light={StaticResource AppForegroundColor}, Dark={StaticResource AppForegroundDark}}"
+                                   VerticalOptions="Center" />
+                            
+                        </HorizontalStackLayout>
+                    </Border>
+
+                </Grid>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
