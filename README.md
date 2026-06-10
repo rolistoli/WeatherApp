@@ -18,21 +18,21 @@ Weather App is a cross-platform mobile application built with .NET MAUI. It allo
 
 | Home | Search | Map Location |
 |---|---|---|
-| <img src="Assets/Screenshots/home-dark.jpg" width="220" alt="Home screen in dark mode"> | <img src="Assets/Screenshots/search-dark.jpg" width="220" alt="Search screen in dark mode"> | <img src="Assets/Screenshots/map-location-dark.jpg" width="220" alt="Map location popup in dark mode"> |
+| <img src="WeatherApp/Assets/Screenshots/home-dark.jpg" width="220" alt="Home screen in dark mode"> | <img src="WeatherApp/Assets/Screenshots/search-dark.jpg" width="220" alt="Search screen in dark mode"> | <img src="WeatherApp/Assets/Screenshots/map-location-dark.jpg" width="220" alt="Map location popup in dark mode"> |
 
 | Results | Settings |
 |---|---|
-| <img src="Assets/Screenshots/results-dark.jpg" width="220" alt="Results screen in dark mode"> | <img src="Assets/Screenshots/settings-dark.jpg" width="220" alt="Settings screen in dark mode"> |
+| <img src="WeatherApp/Assets/Screenshots/results-dark.jpg" width="220" alt="Results screen in dark mode"> | <img src="WeatherApp/Assets/Screenshots/settings-dark.jpg" width="220" alt="Settings screen in dark mode"> |
 
 ### Light Mode
 
 | Home | Search | Map Location |
 |---|---|---|
-| <img src="Assets/Screenshots/home-light.jpg" width="220" alt="Home screen in light mode"> | <img src="Assets/Screenshots/search-light.jpg" width="220" alt="Search screen in light mode"> | <img src="Assets/Screenshots/map-location-light.jpg" width="220" alt="Map location popup in light mode"> |
+| <img src="WeatherApp/Assets/Screenshots/home-light.jpg" width="220" alt="Home screen in light mode"> | <img src="WeatherApp/Assets/Screenshots/search-light.jpg" width="220" alt="Search screen in light mode"> | <img src="WeatherApp/Assets/Screenshots/map-location-light.jpg" width="220" alt="Map location popup in light mode"> |
 
 | Results | Settings |
 |---|---|
-| <img src="Assets/Screenshots/results-light.jpg" width="220" alt="Results screen in light mode"> | <img src="Assets/Screenshots/settings-light.jpg" width="220" alt="Settings screen in light mode"> |
+| <img src="WeatherApp/Assets/Screenshots/results-light.jpg" width="220" alt="Results screen in light mode"> | <img src="WeatherApp/Assets/Screenshots/settings-light.jpg" width="220" alt="Settings screen in light mode"> |
 
 ## Tech Stack
 
