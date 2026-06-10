@@ -20,7 +20,7 @@ Weather App is a cross-platform mobile application built with .NET MAUI. It allo
 |---|---|---|
 | <img src="WeatherApp/Assets/Screenshots/home-dark.jpg" width="220" alt="Home screen in dark mode"> | <img src="WeatherApp/Assets/Screenshots/search-dark.jpg" width="220" alt="Search screen in dark mode"> | <img src="WeatherApp/Assets/Screenshots/map-location-dark.jpg" width="220" alt="Map location popup in dark mode"> |
 
-| Results | Settings |
+| Results | Settings | Error |
 |---|---|---|
 | <img src="WeatherApp/Assets/Screenshots/results-dark.jpg" width="220" alt="Results screen in dark mode"> | <img src="WeatherApp/Assets/Screenshots/settings-dark.jpg" width="220" alt="Settings screen in dark mode"> | <img src="WeatherApp/Assets/Screenshots/error-dark.jpg" width="220" alt="Popup error in dark mode"> |
 
@@ -33,6 +33,7 @@ Weather App is a cross-platform mobile application built with .NET MAUI. It allo
 | Results | Settings | Error |
 |---|---|---|
 | <img src="WeatherApp/Assets/Screenshots/results-light.jpg" width="220" alt="Results screen in light mode"> | <img src="WeatherApp/Assets/Screenshots/settings-light.jpg" width="220" alt="Settings screen in light mode"> | <img src="WeatherApp/Assets/Screenshots/error-light.jpg" width="220" alt="Popup error in light mode"> |
+
 ## Tech Stack
 
 - .NET 10
